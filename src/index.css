@@ -1,0 +1,309 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+:root {
+  --bg-primary: #09090b; /* obsidian black */
+  --bg-secondary: rgba(9, 9, 11, 0.55); /* glass-hud dark */
+  --text-primary: #e4e4e7;
+  --text-secondary: #a1a1aa;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --grid-color-1: rgba(0, 255, 102, 0.03); /* matrix green horizontal line */
+  --grid-color-2: rgba(0, 255, 102, 0.03); /* matrix green vertical line */
+  --scanline-color: rgba(0, 255, 102, 0.06);
+  --scrollbar-track: #040405;
+  --scrollbar-thumb: #1a1a1e;
+  --scrollbar-hover: #00ff66;
+
+  /* Theme Accent Colors (Dark Mode) */
+  --color-matrix: #00ff66;
+  --color-matrix-glow: rgba(0, 255, 102, 0.15);
+  --color-matrix-muted: rgba(0, 255, 102, 0.4);
+  --color-cyber: #00ffff;
+  --color-cyber-glow: rgba(0, 255, 255, 0.15);
+  --color-cyber-muted: rgba(0, 255, 255, 0.4);
+  --color-electric: #8b5cf6;
+  --color-electric-glow: rgba(139, 92, 246, 0.15);
+  --color-electric-muted: rgba(139, 92, 246, 0.4);
+}
+
+/* Light mode overrides */
+html.light {
+  --bg-primary: #f4f4f5; /* clean light-grey */
+  --bg-secondary: rgba(255, 255, 255, 0.7); /* glass-hud light */
+  --text-primary: #18181b; /* dark slate text */
+  --text-secondary: #52525b; /* lighter slate text */
+  --border-color: rgba(9, 9, 11, 0.08);
+  --grid-color-1: rgba(9, 9, 11, 0.025); /* soft grey horizontal */
+  --grid-color-2: rgba(9, 9, 11, 0.025); /* soft grey vertical */
+  --scanline-color: rgba(0, 255, 102, 0.02);
+  --scrollbar-track: #e4e4e7;
+  --scrollbar-thumb: #d4d4d8;
+  --scrollbar-hover: #059669;
+
+  /* Theme Accent Colors (Light Mode - High Contrast) */
+  --color-matrix: #059669; /* emerald green */
+  --color-matrix-glow: rgba(5, 150, 105, 0.08);
+  --color-matrix-muted: rgba(5, 150, 105, 0.3);
+  --color-cyber: #0284c7; /* sky blue */
+  --color-cyber-glow: rgba(2, 132, 199, 0.08);
+  --color-cyber-muted: rgba(2, 132, 199, 0.3);
+  --color-electric: #7c3aed; /* violet */
+  --color-electric-glow: rgba(124, 58, 237, 0.08);
+  --color-electric-muted: rgba(124, 58, 237, 0.3);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Outfit', 'Inter', system-ui, sans-serif;
+    transition: background-color 0.4s ease, color 0.4s ease;
+  }
+
+  body {
+    background-color: var(--bg-primary);
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 4px;
+    border: 2px solid var(--scrollbar-track);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-hover);
+    box-shadow: 0 0 8px var(--scrollbar-hover);
+  }
+}
+
+/* Custom Design Utilities */
+@layer utilities {
+  /* Glowing Effects */
+  .text-glow-matrix {
+    text-shadow: 0 0 10px rgba(0, 255, 102, 0.4), 0 0 20px rgba(0, 255, 102, 0.2);
+  }
+  .text-glow-cyber {
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.4), 0 0 20px rgba(0, 255, 255, 0.2);
+  }
+  .text-glow-electric {
+    text-shadow: 0 0 10px rgba(139, 92, 246, 0.4), 0 0 20px rgba(139, 92, 246, 0.2);
+  }
+
+  .border-glow-matrix {
+    box-shadow: 0 0 15px rgba(0, 255, 102, 0.25);
+  }
+  .border-glow-cyber {
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.25);
+  }
+  .border-glow-electric {
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.25);
+  }
+
+  /* Premium Glassmorphic HUD Elements */
+  .glass-hud {
+    background: var(--bg-secondary);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid var(--border-color);
+  }
+
+  .glass-hud-hover {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .glass-hud-hover:hover {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(0, 255, 102, 0.25);
+    box-shadow: 0 0 20px rgba(0, 255, 102, 0.05);
+  }
+
+  /* Animated Digital Grid-Mesh Background Overlay */
+  .digital-grid {
+    background-image: 
+      linear-gradient(to right, var(--grid-color-1) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--grid-color-2) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: gridMove 25s linear infinite;
+  }
+
+  /* Grid Fade Mask to create center focus and vignette */
+  .digital-grid-mask {
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, #000 60%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, #000 60%, transparent 100%);
+  }
+
+  /* Cyber Grid Line Animation */
+  .scanline {
+    background: linear-gradient(
+      to bottom,
+      rgba(255,255,255,0),
+      var(--scanline-color) 50%,
+      rgba(255,255,255,0)
+    );
+  }
+}
+
+/* Keyframe animations for Background Grid position shift */
+@keyframes gridMove {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 50px;
+  }
+}
+
+@keyframes scan {
+  0% {
+    transform: translateY(-25vh);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+@keyframes glowPulseMatrix {
+  0% {
+    box-shadow: 0 0 5px var(--color-matrix-glow), 0 0 10px rgba(0, 0, 0, 0.02);
+  }
+  100% {
+    box-shadow: 0 0 15px var(--color-matrix-muted), 0 0 25px var(--color-matrix-glow);
+  }
+}
+
+@keyframes glowPulseCyber {
+  0% {
+    box-shadow: 0 0 5px var(--color-cyber-glow), 0 0 10px rgba(0, 0, 0, 0.02);
+  }
+  100% {
+    box-shadow: 0 0 15px var(--color-cyber-muted), 0 0 25px var(--color-cyber-glow);
+  }
+}
+
+/* Light Mode Element Override Adapters */
+html.light .text-white {
+  color: #09090b !important;
+}
+html.light .text-zinc-300,
+html.light .text-zinc-350,
+html.light .text-zinc-400 {
+  color: #27272a !important; /* dark slate grey for readability */
+}
+html.light .text-zinc-500 {
+  color: #71717a !important;
+}
+html.light .bg-zinc-950 {
+  background-color: #ffffff !important;
+}
+html.light .bg-zinc-950\/20,
+html.light .bg-zinc-950\/30,
+html.light .bg-zinc-950\/40,
+html.light .bg-zinc-950\/45,
+html.light .bg-zinc-950\/50,
+html.light .bg-zinc-950\/60,
+html.light .bg-zinc-950\/80,
+html.light .bg-zinc-950\/85,
+html.light .bg-zinc-950\/90,
+html.light .bg-zinc-900\/50,
+html.light .bg-zinc-900\/60 {
+  background-color: rgba(255, 255, 255, 0.85) !important;
+}
+html.light .border-zinc-800,
+html.light .border-zinc-850,
+html.light .border-zinc-900,
+html.light .border-zinc-800\/80,
+html.light .border-zinc-900\/60,
+html.light .border-zinc-950 {
+  border-color: rgba(9, 9, 11, 0.12) !important;
+}
+html.light .shadow-2xl {
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08), 0 8px 15px -10px rgba(0, 0, 0, 0.05) !important;
+}
+html.light .text-zinc-600 {
+  color: #52525b !important;
+}
+html.light .text-zinc-650 {
+  color: #52525b !important;
+}
+html.light .bg-zinc-900 {
+  background-color: #e4e4e7 !important;
+  color: #18181b !important;
+}
+
+/* Disable text glows in light mode to maintain sharp typography */
+html.light .text-glow-matrix,
+html.light .text-glow-cyber,
+html.light .text-glow-electric {
+  text-shadow: none !important;
+}
+
+/* Empty Contribution Grid cells in light mode */
+html.light .bg-zinc-900\/60.border-zinc-950,
+html.light .bg-zinc-900\/60.border-zinc-950\/10 {
+  background-color: #e4e4e7 !important;
+  border-color: rgba(9, 9, 11, 0.05) !important;
+}
+
+/* Holographic Avatar Animations & Dynamic Overlay Glows */
+@keyframes hologramScan {
+  0% { top: 0%; opacity: 0; }
+  5% { opacity: 0.8; }
+  95% { opacity: 0.8; }
+  100% { top: 100%; opacity: 0; }
+}
+
+@keyframes avatarFloat {
+  0% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-5px) scale(1.015); }
+  100% { transform: translateY(0px) scale(1); }
+}
+
+.animate-hologram-scan {
+  animation: hologramScan 5s ease-in-out infinite;
+}
+
+.animate-avatar-float {
+  animation: avatarFloat 5s ease-in-out infinite;
+}
+
+.avatar-glow {
+  filter: drop-shadow(0 0 8px var(--color-matrix-muted)) brightness(1.02) contrast(1.02);
+  transition: filter 0.4s ease, transform 0.4s ease;
+}
+
+.group:hover .avatar-glow {
+  filter: drop-shadow(0 0 16px var(--color-matrix)) brightness(1.05) contrast(1.05);
+}
+
+.avatar-fade-overlay {
+  background: linear-gradient(to top, #09090b 0%, rgba(9, 9, 11, 0.75) 45%, rgba(9, 9, 11, 0) 100%);
+  transition: background 0.4s ease;
+}
+
+html.light .avatar-fade-overlay {
+  background: linear-gradient(to top, #ffffff 0%, rgba(255, 255, 255, 0.75) 45%, rgba(255, 255, 255, 0) 100%);
+}
+
+@keyframes sonarPulse {
+  0% { transform: scale(0.98); opacity: 0.7; }
+  100% { transform: scale(1.1); opacity: 0; }
+}
+
+.sonar-ring {
+  animation: sonarPulse 3s cubic-bezier(0.165, 0.84, 0.44, 1) infinite;
+}
+
+
