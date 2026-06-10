@@ -3,6 +3,7 @@ import { auth, db } from '../firebase';
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, setDoc, collection, getDocs, deleteDoc, addDoc, updateDoc } from 'firebase/firestore';
 import { Terminal, Shield, LogOut, Save, Plus, Trash2, Edit2, Mail, Briefcase, FileCode, Cpu, Loader2 } from 'lucide-react';
+import emailjs from '@emailjs/browser';
 
 export default function AdminDashboard() {
   // Auth states
@@ -44,6 +45,9 @@ export default function AdminDashboard() {
 
   // Messages inbox state
   const [messagesList, setMessagesList] = useState([]);
+  const [replyingToId, setReplyingToId] = useState(null);
+  const [replyText, setReplyText] = useState({});
+  const [replyStatus, setReplyStatus] = useState({});
 
   // Monitor Auth State
   useEffect(() => {
@@ -243,6 +247,53 @@ export default function AdminDashboard() {
       console.error(err);
     } finally {
       setActionLoading(false);
+    }
+  };
+
+  // Dispatch email response via EmailJS
+  const handleSendReply = async (msg) => {
+    const text = replyText[msg.id]?.trim();
+    if (!text) {
+      alert("Please type a response payload.");
+      return;
+    }
+
+    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+    const avatarUrl = import.meta.env.VITE_EMAILJS_AVATAR_URL;
+
+    if (!serviceId || serviceId === 'your_emailjs_service_id' || !publicKey) {
+      alert("EmailJS is not fully configured in your local .env file. Please edit your VITE_EMAILJS_... environment variables.");
+      return;
+    }
+
+    setReplyStatus(prev => ({ ...prev, [msg.id]: 'sending' }));
+
+    try {
+      const templateParams = {
+        to_name: msg.name || 'Valued User',
+        to_email: msg.email,
+        reply_message: text,
+        original_message: msg.message || '',
+        avatar_url: avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=250&auto=format&fit=crop',
+        developer_name: profileData.name || 'Muhammad Waqas',
+        developer_role: profileData.role || 'AI-Driven Full-Stack Engineer',
+      };
+
+      await emailjs.send(serviceId, templateId, templateParams, publicKey);
+      
+      setReplyStatus(prev => ({ ...prev, [msg.id]: 'success' }));
+      setReplyText(prev => ({ ...prev, [msg.id]: '' }));
+      
+      // Auto-close reply editor after success
+      setTimeout(() => {
+        setReplyStatus(prev => ({ ...prev, [msg.id]: null }));
+        setReplyingToId(null);
+      }, 4000);
+    } catch (err) {
+      console.error("EmailJS dispatch error: ", err);
+      setReplyStatus(prev => ({ ...prev, [msg.id]: 'error' }));
     }
   };
 
@@ -635,32 +686,89 @@ export default function AdminDashboard() {
               {messagesList.length === 0 ? (
                 <div className="text-center py-12 font-mono text-zinc-500 text-xs">INBOX_QUEUE_EMPTY // NO_PACKETS_RECEIVED</div>
               ) : (
-                messagesList.map((msg) => (
-                  <div key={msg.id} className="p-4 rounded border border-zinc-900 bg-zinc-950/45 font-mono text-xs relative group flex flex-col sm:flex-row justify-between gap-4">
-                    <div className="space-y-2 flex-1">
-                      <div className="flex flex-wrap items-center gap-x-2 text-[10px] text-zinc-500">
-                        <span className="text-white font-bold">{msg.name}</span>
-                        <span className="text-zinc-800">|</span>
-                        <a href={`mailto:${msg.email}`} className="text-cyber hover:underline">{msg.email}</a>
-                        <span className="text-zinc-800">|</span>
-                        <span>
-                          {msg.timestamp?.seconds 
-                            ? new Date(msg.timestamp.seconds * 1000).toLocaleString() 
-                            : 'Date unavailable'}
-                        </span>
+                  messagesList.map((msg) => (
+                  <div key={msg.id} className="p-4 rounded border border-zinc-900 bg-zinc-950/45 font-mono text-xs relative group flex flex-col space-y-3">
+                    <div className="flex flex-col sm:flex-row justify-between gap-4 items-start">
+                      <div className="space-y-2 flex-1">
+                        <div className="flex flex-wrap items-center gap-x-2 text-[10px] text-zinc-500">
+                          <span className="text-white font-bold">{msg.name}</span>
+                          <span className="text-zinc-800">|</span>
+                          <a href={`mailto:${msg.email}`} className="text-cyber hover:underline">{msg.email}</a>
+                          <span className="text-zinc-800">|</span>
+                          <span>
+                            {msg.timestamp?.seconds 
+                              ? new Date(msg.timestamp.seconds * 1000).toLocaleString() 
+                              : 'Date unavailable'}
+                          </span>
+                        </div>
+                        <p className="text-zinc-350 break-words pl-2 border-l border-zinc-800 whitespace-pre-wrap">{msg.message}</p>
                       </div>
-                      <p className="text-zinc-350 break-words pl-2 border-l border-zinc-800 whitespace-pre-wrap">{msg.message}</p>
+
+                      <div className="shrink-0 flex items-center space-x-2">
+                        <button
+                          onClick={() => {
+                            setReplyingToId(replyingToId === msg.id ? null : msg.id);
+                          }}
+                          className={`p-1.5 rounded border transition-all duration-305 ${
+                            replyingToId === msg.id 
+                              ? 'bg-cyber/10 border-cyber text-cyber' 
+                              : 'bg-zinc-900 border-zinc-850 text-zinc-400 hover:text-cyber hover:border-cyber/30'
+                          }`}
+                          title="Compose Reply"
+                        >
+                          <Mail className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteMessage(msg.id)}
+                          className="p-1.5 rounded bg-rose-600/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-white transition-all opacity-80 group-hover:opacity-100"
+                          title="Delete Packet"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
 
-                    <div className="shrink-0 flex items-start">
-                      <button
-                        onClick={() => handleDeleteMessage(msg.id)}
-                        className="p-1.5 rounded bg-rose-600/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-white transition-all opacity-80 group-hover:opacity-100"
-                        title="Delete Packet"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
+                    {/* Expandable Email Reply Editor Panel */}
+                    {replyingToId === msg.id && (
+                      <div className="w-full mt-3 p-4 rounded border border-zinc-850 bg-zinc-950/20 flex flex-col space-y-3">
+                        <div className="flex items-center justify-between border-b border-zinc-900/60 pb-2 select-none">
+                          <span className="text-[10px] text-zinc-500">// COMPOSING_TRANSMISSION_PAYLOAD</span>
+                          <span className="text-[9px] text-cyber">TARGET: {msg.email}</span>
+                        </div>
+                        <textarea
+                          value={replyText[msg.id] || ''}
+                          onChange={(e) => setReplyText(p => ({ ...p, [msg.id]: e.target.value }))}
+                          placeholder="Type response payload details here..."
+                          rows={4}
+                          className="w-full bg-zinc-950/40 border border-zinc-850 rounded px-3 py-2 outline-none text-white placeholder-zinc-700 text-sm font-sans resize-none focus:border-cyber/40 focus:bg-zinc-950/80 transition-all focus:shadow-[0_0_12px_rgba(0,255,255,0.05)]"
+                          required
+                        />
+                        <div className="flex justify-between items-center text-[10px]">
+                          <div>
+                            {replyStatus[msg.id] === 'sending' && <span className="text-cyber animate-pulse">TRANSMITTING SIGNAL...</span>}
+                            {replyStatus[msg.id] === 'success' && <span className="text-matrix">SIGNAL_DISPATCHED // OK</span>}
+                            {replyStatus[msg.id] === 'error' && <span className="text-rose-500">DISPATCH_FAILED // ACCESS_DENIED</span>}
+                            {!replyStatus[msg.id] && <span className="text-zinc-650">READY_FOR_DISPATCH</span>}
+                          </div>
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => handleSendReply(msg)}
+                              disabled={replyStatus[msg.id] === 'sending'}
+                              className="px-4 py-1.5 rounded font-semibold bg-cyber text-obsidian border border-cyber hover:bg-cyber-glow transition-all active:scale-95 disabled:opacity-50"
+                            >
+                              Send
+                            </button>
+                            <button
+                              onClick={() => setReplyingToId(null)}
+                              disabled={replyStatus[msg.id] === 'sending'}
+                              className="px-3 py-1.5 rounded bg-zinc-900 border border-zinc-850 text-zinc-400 hover:border-zinc-700 transition-all"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))
               )}
