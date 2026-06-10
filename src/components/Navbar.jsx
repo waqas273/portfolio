@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Terminal, User, Cpu, FolderGit2, Briefcase, Mail, Download, Wifi, GraduationCap } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 
-const SECTIONS = ['home', 'about', 'skills', 'projects', 'experience', 'education', 'contact'];
+const SECTIONS = ['home', 'about', 'education', 'skills', 'projects', 'experience', 'contact'];
 
 export default function Navbar() {
   const [activeSection, setActiveSection] = useState('home');

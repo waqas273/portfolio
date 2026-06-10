@@ -256,11 +256,28 @@ export default function App() {
         {/* Divider line */}
         <div className="h-[1px] bg-gradient-to-r from-transparent via-zinc-800 to-transparent my-12" />
 
+        {/* EDUCATION SECTION */}
+        <section id="education" className="py-20 flex flex-col justify-center">
+          <div className="mb-8 text-left sm:text-center sm:mx-auto max-w-2xl">
+            <h2 className="text-2xl sm:text-4xl font-bold text-white mb-4 font-mono justify-start sm:justify-center flex items-center space-x-3">
+              <span className="text-matrix">02.</span>
+              <span>Academic Foundation // Education</span>
+            </h2>
+            <p className="text-zinc-400 text-sm sm:text-base font-sans leading-relaxed">
+              Trace of academic milestones, credentials, and computer science study details.
+            </p>
+          </div>
+          <Education />
+        </section>
+
+        {/* Divider line */}
+        <div className="h-[1px] bg-gradient-to-r from-transparent via-zinc-800 to-transparent my-12" />
+
         {/* SKILLS SECTION */}
         <section id="skills" className="py-20 flex flex-col justify-center">
           <div className="mb-8">
             <h2 className="text-2xl sm:text-4xl font-bold text-white mb-4 font-mono flex items-center space-x-3">
-              <span className="text-cyber">02.</span>
+              <span className="text-cyber">03.</span>
               <span>Technical Skills // Command Center</span>
             </h2>
             <p className="text-zinc-400 text-sm sm:text-base max-w-2xl font-sans leading-relaxed">
@@ -277,7 +294,7 @@ export default function App() {
         <section id="projects" className="py-20 flex flex-col justify-center">
           <div className="mb-8">
             <h2 className="text-2xl sm:text-4xl font-bold text-white mb-4 font-mono flex items-center space-x-3">
-              <span className="text-electric">03.</span>
+              <span className="text-electric">04.</span>
               <span>Featured Projects Repository</span>
             </h2>
             <p className="text-zinc-400 text-sm sm:text-base max-w-2xl font-sans leading-relaxed">
@@ -297,7 +314,7 @@ export default function App() {
           <div>
             <div className="mb-8">
               <h2 className="text-2xl sm:text-4xl font-bold text-white mb-4 font-mono flex items-center space-x-3">
-                <span className="text-matrix">04.</span>
+                <span className="text-matrix">05.</span>
                 <span>Expertise & Services</span>
               </h2>
               <p className="text-zinc-400 text-sm sm:text-base max-w-2xl font-sans leading-relaxed">
@@ -311,7 +328,7 @@ export default function App() {
           <div>
             <div className="mb-8 text-left sm:text-center sm:mx-auto max-w-2xl">
               <h2 className="text-2xl sm:text-4xl font-bold text-white mb-4 font-mono justify-start sm:justify-center flex items-center space-x-3">
-                <span className="text-cyber">05.</span>
+                <span className="text-cyber">06.</span>
                 <span>AI Agent Simulator // Command Console</span>
               </h2>
               <p className="text-zinc-400 text-sm sm:text-base font-sans leading-relaxed">
@@ -321,23 +338,6 @@ export default function App() {
             <DevConsole />
           </div>
 
-        </section>
-
-        {/* Divider line */}
-        <div className="h-[1px] bg-gradient-to-r from-transparent via-zinc-800 to-transparent my-12" />
-
-        {/* EDUCATION SECTION */}
-        <section id="education" className="py-20 flex flex-col justify-center">
-          <div className="mb-8 text-left sm:text-center sm:mx-auto max-w-2xl">
-            <h2 className="text-2xl sm:text-4xl font-bold text-white mb-4 font-mono justify-start sm:justify-center flex items-center space-x-3">
-              <span className="text-matrix">06.</span>
-              <span>Academic Foundation // Education</span>
-            </h2>
-            <p className="text-zinc-400 text-sm sm:text-base font-sans leading-relaxed">
-              Trace of academic milestones, credentials, and computer science study details.
-            </p>
-          </div>
-          <Education />
         </section>
 
         {/* Divider line */}
