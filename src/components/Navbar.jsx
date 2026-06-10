@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Terminal, User, Cpu, FolderGit2, Briefcase, Mail, Download, Wifi } from 'lucide-react';
+import { Terminal, User, Cpu, FolderGit2, Briefcase, Mail, Download, Wifi, GraduationCap } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 
-const SECTIONS = ['home', 'about', 'skills', 'projects', 'experience', 'contact'];
+const SECTIONS = ['home', 'about', 'skills', 'projects', 'experience', 'education', 'contact'];
 
 export default function Navbar() {
   const [activeSection, setActiveSection] = useState('home');
@@ -70,6 +70,7 @@ export default function Navbar() {
       case 'skills': return <Cpu className={cls} />;
       case 'projects': return <FolderGit2 className={cls} />;
       case 'experience': return <Briefcase className={cls} />;
+      case 'education': return <GraduationCap className={cls} />;
       case 'contact': return <Mail className={cls} />;
       default: return <Terminal className={cls} />;
     }

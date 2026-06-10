@@ -6,6 +6,7 @@ import BentoGrid from './components/BentoGrid';
 import ProjectsGallery from './components/ProjectsGallery';
 import ServicesCards from './components/ServicesCards';
 import DevConsole from './components/DevConsole';
+import Education from './components/Education';
 import ContactTerminal from './components/ContactTerminal';
 import AdminDashboard from './components/AdminDashboard';
 import { Database, FolderClosed, Cpu, LayoutGrid, ArrowUp } from 'lucide-react';
@@ -325,11 +326,28 @@ export default function App() {
         {/* Divider line */}
         <div className="h-[1px] bg-gradient-to-r from-transparent via-zinc-800 to-transparent my-12" />
 
+        {/* EDUCATION SECTION */}
+        <section id="education" className="py-20 flex flex-col justify-center">
+          <div className="mb-8 text-left sm:text-center sm:mx-auto max-w-2xl">
+            <h2 className="text-2xl sm:text-4xl font-bold text-white mb-4 font-mono justify-start sm:justify-center flex items-center space-x-3">
+              <span className="text-matrix">06.</span>
+              <span>Academic Foundation // Education</span>
+            </h2>
+            <p className="text-zinc-400 text-sm sm:text-base font-sans leading-relaxed">
+              Trace of academic milestones, credentials, and computer science study details.
+            </p>
+          </div>
+          <Education />
+        </section>
+
+        {/* Divider line */}
+        <div className="h-[1px] bg-gradient-to-r from-transparent via-zinc-800 to-transparent my-12" />
+
         {/* CONTACT SECTION */}
         <section id="contact" className="py-20 flex flex-col justify-center">
           <div className="mb-8 text-center mx-auto max-w-xl">
             <h2 className="text-2xl sm:text-4xl font-bold text-white mb-4 font-mono justify-center flex items-center space-x-3">
-              <span className="text-cyber">06.</span>
+              <span className="text-cyber">07.</span>
               <span>Get In Touch // Message Board</span>
             </h2>
             <p className="text-zinc-400 text-sm sm:text-base font-sans leading-relaxed">
