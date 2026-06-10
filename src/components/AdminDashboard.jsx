@@ -4,6 +4,7 @@ import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebas
 import { doc, getDoc, setDoc, collection, getDocs, deleteDoc, addDoc, updateDoc } from 'firebase/firestore';
 import { Terminal, Shield, LogOut, Save, Plus, Trash2, Edit2, Mail, Briefcase, FileCode, Cpu, Loader2 } from 'lucide-react';
 import emailjs from '@emailjs/browser';
+import ThemeToggle from './ThemeToggle';
 
 export default function AdminDashboard() {
   // Auth states
@@ -312,9 +313,12 @@ export default function AdminDashboard() {
     return (
       <div className="min-h-screen bg-obsidian flex items-center justify-center px-4">
         <div className="w-full max-w-md glass-hud rounded-lg border border-zinc-800 shadow-2xl overflow-hidden">
-          <div className="bg-zinc-950/90 px-4 py-3 border-b border-zinc-900 flex items-center space-x-2 font-mono text-xs">
-            <Shield className="w-4 h-4 text-rose-500" />
-            <span className="text-zinc-400 font-bold">SECURE_GATEWAY // AUTH</span>
+          <div className="bg-zinc-950/90 px-4 py-3 border-b border-zinc-900 flex items-center justify-between font-mono text-xs">
+            <div className="flex items-center space-x-2">
+              <Shield className="w-4 h-4 text-rose-500" />
+              <span className="text-zinc-400 font-bold">SECURE_GATEWAY // AUTH</span>
+            </div>
+            <ThemeToggle />
           </div>
 
           <form onSubmit={handleLogin} className="p-6 space-y-4 font-mono text-xs">
@@ -378,6 +382,8 @@ export default function AdminDashboard() {
           </div>
 
           <div className="flex items-center space-x-3">
+            <ThemeToggle />
+            <div className="h-6 w-[1px] bg-zinc-850" />
             {/* View Portfolio link */}
             <a 
               href="#/" 
