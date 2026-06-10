@@ -3,31 +3,31 @@ import { Terminal, Database, Cpu } from 'lucide-react';
 
 const SKILLS_DATA = [
   {
-    id: 'frontend',
-    title: 'Frontend & MERN Stack',
-    subtitle: 'Expert user interface and client systems',
+    id: 'mern',
+    title: 'MERN Full-Stack',
+    subtitle: 'Traditional server-based web applications',
     icon: Cpu,
     accentColor: 'matrix',
     accentGlow: 'rgba(0, 255, 102, 0.1)',
-    badge: 'MERN Stack // UI',
+    badge: 'MERN Stack',
     skills: [
-      { name: 'React.js Framework', percent: 95, badge: 'Expert' },
-      { name: 'Tailwind CSS & Styling', percent: 90, badge: 'Advanced' },
-      { name: 'HTML5 & Responsive UX', percent: 92, badge: 'Expert' }
+      { name: 'React.js Client Library', percent: 95, badge: 'Expert' },
+      { name: 'Node.js & Express APIs', percent: 94, badge: 'Expert' },
+      { name: 'MongoDB Database Schemas', percent: 88, badge: 'Expert' }
     ]
   },
   {
-    id: 'backend',
-    title: 'Backend & Cloud Systems',
-    subtitle: 'Secure servers and cloud databases',
+    id: 'firebase',
+    title: 'React + Firebase',
+    subtitle: 'Scalable serverless cloud architectures',
     icon: Database,
     accentColor: 'cyber',
     accentGlow: 'rgba(0, 255, 255, 0.1)',
-    badge: 'Server // Database',
+    badge: 'Serverless // Cloud',
     skills: [
-      { name: 'Node.js & Express.js', percent: 94, badge: 'Expert' },
-      { name: 'Firebase Cloud Platform', percent: 92, badge: 'Expert' },
-      { name: 'MongoDB Database', percent: 88, badge: 'Expert' }
+      { name: 'React + Firebase SDK', percent: 93, badge: 'Expert' },
+      { name: 'Firestore Real-time DB', percent: 92, badge: 'Expert' },
+      { name: 'Firebase Auth & Security', percent: 90, badge: 'Advanced' }
     ]
   },
   {

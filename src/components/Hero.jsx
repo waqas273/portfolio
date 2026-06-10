@@ -25,7 +25,7 @@ const LOG_TEMPLATES = [
 export default function Hero({ profile = {} }) {
   const name = profile.name || 'Elite Full-Stack Architect';
   const role = profile.role || 'Visual Architect & Full-Stack Engineer';
-  const about = profile.about || 'I am a Full-Stack Engineer designing high-performance interfaces, cloud structures, and interactive layouts. Leveraging modular technologies to bridge code speed with clean visual art.';
+  const about = profile.heroAbout || 'A results-driven Full-Stack & AI Engineer with expertise in building web applications using either the MERN stack or serverless React + Firebase setups. I specialize in integrating clean frontend interfaces with robust databases and intelligent RAG-based pipelines.';
   
   // Format focus tags dynamically inside typewriter text
   const typewriterText = profile.focusTags

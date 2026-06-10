@@ -111,7 +111,7 @@ export default function App() {
                   <div className="relative border-l-2 border-matrix/50 pl-4 space-y-1">
                     <span className="font-mono text-[9px] sm:text-[10px] text-matrix uppercase tracking-wider font-semibold">// executive_summary</span>
                     <p className="leading-relaxed text-zinc-350 font-sans text-sm sm:text-base">
-                      {profile?.about || 'I am a Full-Stack Engineer designing high-performance interfaces, cloud structures, and interactive layouts. Leveraging modular technologies to bridge code speed with clean visual art.'}
+                      {profile?.about || 'I focus on bridging clean frontend architecture with robust database engines. Whether deploying traditional server-based sites using the MERN stack (MongoDB, Express, React, Node.js) or scaling serverless applications via React + Firebase, I design modular codebases and integrate intelligent AI vector-search RAG pipelines to automate user interactions.'}
                     </p>
                   </div>
 

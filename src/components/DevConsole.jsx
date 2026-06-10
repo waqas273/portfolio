@@ -6,7 +6,7 @@ const QUERIES = [
     id: 'focus',
     label: 'Main Focus',
     command: 'run developer.get_focus()',
-    answer: 'I specialize in building intelligent full-stack applications. My focus is combining the MERN stack (MongoDB, Express, React, Node.js) with Firebase cloud structures and custom AI/ML integrations.'
+    answer: 'I build advanced full-stack systems. My projects utilize either a traditional server-based MERN stack (MongoDB, Express, React, Node.js) or a modern serverless backend (React + Firebase), integrated with intelligent AI/ML models.'
   },
   {
     id: 'ai-rag',
@@ -16,15 +16,15 @@ const QUERIES = [
   },
   {
     id: 'mern',
-    label: 'MERN Stack & Firebase',
-    command: 'run developer.get_stack_info()',
-    answer: 'I build responsive React.js frontends styled with Tailwind CSS, connected to secure Node.js & Express.js APIs. I manage data modeling in MongoDB and real-time syncing via Firebase Firestore.'
+    label: 'MERN Stack Dev',
+    command: 'run developer.get_mern_stack()',
+    answer: 'I engineer robust server-based applications using MongoDB, Express.js, React.js, and Node.js. I design modular RESTful API endpoints, secure JSON Web Token (JWT) authorization routes, and custom relational schemas.'
   },
   {
-    id: 'availability',
-    label: 'Availability Status',
-    command: 'run developer.check_availability()',
-    answer: 'I am actively open to freelance contracts, technical consulting, and remote full-stack/AI roles. Ready to initialize connection and merge code!'
+    id: 'firebase',
+    label: 'React + Firebase',
+    command: 'run developer.get_firebase_info()',
+    answer: 'I build modern, scalable serverless applications using React.js integrated with Firebase services. This includes configuring Firestore real-time synchronization, Firebase Auth database rules, cloud storage, and hosting configurations.'
   }
 ];
 

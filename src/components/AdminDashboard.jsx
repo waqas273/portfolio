@@ -23,7 +23,8 @@ export default function AdminDashboard() {
   const [profileData, setProfileData] = useState({
     name: 'Elite Full-Stack Engineer',
     role: 'Visual Architect & Core Engineer',
-    about: 'I am a Full-Stack Engineer designing high-performance interfaces, cloud structures, and interactive layouts. Leveraging modular technologies to bridge code speed with clean visual art.',
+    about: 'I focus on bridging clean frontend architecture with robust cloud databases. Leveraging the MERN stack alongside Firebase, I design modular web systems and deploy intelligent vector-search RAG pipelines to automate workflows, prioritizing performance, secure authentication, and seamless user experiences.',
+    heroAbout: 'A results-driven Full-Stack & AI Engineer specializing in the MERN stack, Firebase cloud architectures, and intelligent RAG-based pipelines. I build secure, high-performance web applications that connect clean code with interactive user experiences.',
     focusTags: 'React/Vite, Firebase Cloud, High-Fidelity Tailwind Designs'
   });
 
@@ -73,6 +74,7 @@ export default function AdminDashboard() {
           name: data.name || '',
           role: data.role || '',
           about: data.about || '',
+          heroAbout: data.heroAbout || '',
           focusTags: data.focusTags || ''
         });
       }
@@ -405,7 +407,18 @@ export default function AdminDashboard() {
               </div>
 
               <div className="md:col-span-2 space-y-1">
-                <label className="text-zinc-500">ABOUT_PARAGRAPH</label>
+                <label className="text-zinc-500">HERO_PARAGRAPH (Home introduction summary)</label>
+                <textarea 
+                  value={profileData.heroAbout}
+                  onChange={(e) => setProfileData(p => ({ ...p, heroAbout: e.target.value }))}
+                  rows={2}
+                  className="w-full p-2.5 rounded bg-zinc-900/60 border border-zinc-800 outline-none text-white focus:border-matrix resize-none"
+                  required
+                />
+              </div>
+
+              <div className="md:col-span-2 space-y-1">
+                <label className="text-zinc-500">ABOUT_PARAGRAPH (Detailed profile description)</label>
                 <textarea 
                   value={profileData.about}
                   onChange={(e) => setProfileData(p => ({ ...p, about: e.target.value }))}
