@@ -85,10 +85,16 @@ export default function App() {
         {/* ABOUT SECTION */}
         <section id="about" className="py-20 min-h-[60vh] flex flex-col justify-center">
           <div className="max-w-5xl w-full">
-            <h2 className="text-2xl sm:text-4xl font-bold text-white mb-6 font-mono flex items-center space-x-3">
-              <span className="text-matrix">01.</span>
-              <span>About Me // Profile</span>
-            </h2>
+            <div className="mb-6 space-y-1">
+              <span className="font-mono text-[10px] sm:text-xs tracking-[0.2em] text-matrix uppercase block">
+                // SYSTEM.PROFILE
+              </span>
+              <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight font-sans flex items-center gap-3">
+                <span>About Me</span>
+                <span className="text-zinc-500 font-mono text-lg sm:text-2xl font-light">/ Profile</span>
+                <span className="h-[2px] flex-grow bg-gradient-to-r from-matrix/30 via-zinc-800/20 to-transparent ml-4 hidden sm:block" />
+              </h2>
+            </div>
             
             {/* Unified System Configuration Window */}
             <div className="glass-hud rounded-lg border border-zinc-800/80 shadow-2xl overflow-hidden">
@@ -258,12 +264,15 @@ export default function App() {
 
         {/* EDUCATION SECTION */}
         <section id="education" className="py-20 flex flex-col justify-center">
-          <div className="mb-8 text-left sm:text-center sm:mx-auto max-w-2xl">
-            <h2 className="text-2xl sm:text-4xl font-bold text-white mb-4 font-mono justify-start sm:justify-center flex items-center space-x-3">
-              <span className="text-matrix">02.</span>
-              <span>Academic Foundation // Education</span>
+          <div className="mb-8 text-left sm:text-center sm:mx-auto max-w-2xl space-y-1">
+            <span className="font-mono text-[10px] sm:text-xs tracking-[0.2em] text-matrix uppercase block">
+              // ACADEMICS.QUALIFICATIONS
+            </span>
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight font-sans justify-start sm:justify-center flex items-center gap-3">
+              <span>Academic Foundation</span>
+              <span className="text-zinc-500 font-mono text-lg sm:text-2xl font-light">/ Education</span>
             </h2>
-            <p className="text-zinc-400 text-sm sm:text-base font-sans leading-relaxed">
+            <p className="text-zinc-400 text-sm sm:text-base font-sans leading-relaxed pt-2">
               Trace of academic milestones, credentials, and computer science study details.
             </p>
           </div>
@@ -275,12 +284,16 @@ export default function App() {
 
         {/* SKILLS SECTION */}
         <section id="skills" className="py-20 flex flex-col justify-center">
-          <div className="mb-8">
-            <h2 className="text-2xl sm:text-4xl font-bold text-white mb-4 font-mono flex items-center space-x-3">
-              <span className="text-cyber">03.</span>
-              <span>Technical Skills // Command Center</span>
+          <div className="mb-8 space-y-1">
+            <span className="font-mono text-[10px] sm:text-xs tracking-[0.2em] text-cyber uppercase block">
+              // TECH.CORE_STACK
+            </span>
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight font-sans flex items-center gap-3">
+              <span>Technical Skills</span>
+              <span className="text-zinc-500 font-mono text-lg sm:text-2xl font-light">/ Command Center</span>
+              <span className="h-[2px] flex-grow bg-gradient-to-r from-cyber/30 via-zinc-800/20 to-transparent ml-4 hidden sm:block" />
             </h2>
-            <p className="text-zinc-400 text-sm sm:text-base max-w-2xl font-sans leading-relaxed">
+            <p className="text-zinc-400 text-sm sm:text-base max-w-2xl font-sans leading-relaxed pt-2">
               Professional engineering dashboard outlining specialized technical domains, automated proficiency ratings, and live system metrics.
             </p>
           </div>
@@ -292,12 +305,16 @@ export default function App() {
 
         {/* PROJECTS SECTION */}
         <section id="projects" className="py-20 flex flex-col justify-center">
-          <div className="mb-8">
-            <h2 className="text-2xl sm:text-4xl font-bold text-white mb-4 font-mono flex items-center space-x-3">
-              <span className="text-electric">04.</span>
-              <span>Featured Projects Repository</span>
+          <div className="mb-8 space-y-1">
+            <span className="font-mono text-[10px] sm:text-xs tracking-[0.2em] text-electric uppercase block">
+              // PORTFOLIO.WORKS
+            </span>
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight font-sans flex items-center gap-3">
+              <span>Featured Projects</span>
+              <span className="text-zinc-500 font-mono text-lg sm:text-2xl font-light">/ Repository</span>
+              <span className="h-[2px] flex-grow bg-gradient-to-r from-electric/30 via-zinc-800/20 to-transparent ml-4 hidden sm:block" />
             </h2>
-            <p className="text-zinc-400 text-sm sm:text-base max-w-2xl font-sans leading-relaxed">
+            <p className="text-zinc-400 text-sm sm:text-base max-w-2xl font-sans leading-relaxed pt-2">
               Dynamically compiled project nodes synced directly from the cloud database, structured with tilt-physics widgets.
             </p>
           </div>
@@ -312,12 +329,15 @@ export default function App() {
           
           {/* Services segment */}
           <div>
-            <div className="mb-8">
-              <h2 className="text-2xl sm:text-4xl font-bold text-white mb-4 font-mono flex items-center space-x-3">
-                <span className="text-matrix">05.</span>
+            <div className="mb-8 space-y-1">
+              <span className="font-mono text-[10px] sm:text-xs tracking-[0.2em] text-matrix uppercase block">
+                // CAPABILITIES.SERVICES
+              </span>
+              <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight font-sans flex items-center gap-3">
                 <span>Expertise & Services</span>
+                <span className="h-[2px] flex-grow bg-gradient-to-r from-matrix/30 via-zinc-800/20 to-transparent ml-4 hidden sm:block" />
               </h2>
-              <p className="text-zinc-400 text-sm sm:text-base max-w-2xl font-sans leading-relaxed">
+              <p className="text-zinc-400 text-sm sm:text-base max-w-2xl font-sans leading-relaxed pt-2">
                 Core engineering expertise mapped to high-fidelity, optimized, and connected architectures.
               </p>
             </div>
@@ -326,12 +346,15 @@ export default function App() {
 
           {/* Interactive Dev Console Simulator */}
           <div>
-            <div className="mb-8 text-left sm:text-center sm:mx-auto max-w-2xl">
-              <h2 className="text-2xl sm:text-4xl font-bold text-white mb-4 font-mono justify-start sm:justify-center flex items-center space-x-3">
-                <span className="text-cyber">06.</span>
-                <span>AI Agent Simulator // Command Console</span>
+            <div className="mb-8 text-left sm:text-center sm:mx-auto max-w-2xl space-y-1">
+              <span className="font-mono text-[10px] sm:text-xs tracking-[0.2em] text-cyber uppercase block">
+                // INTERACTIVE.SIMULATOR
+              </span>
+              <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight font-sans justify-start sm:justify-center flex items-center gap-3">
+                <span>AI Agent Simulator</span>
+                <span className="text-zinc-500 font-mono text-lg sm:text-2xl font-light">/ Command Console</span>
               </h2>
-              <p className="text-zinc-400 text-sm sm:text-base font-sans leading-relaxed">
+              <p className="text-zinc-400 text-sm sm:text-base font-sans leading-relaxed pt-2">
                 Interact with my query console simulation to retrieve live system profiles, RAG structures, and focus parameters.
               </p>
             </div>
@@ -345,12 +368,15 @@ export default function App() {
 
         {/* CONTACT SECTION */}
         <section id="contact" className="py-20 flex flex-col justify-center">
-          <div className="mb-8 text-center mx-auto max-w-xl">
-            <h2 className="text-2xl sm:text-4xl font-bold text-white mb-4 font-mono justify-center flex items-center space-x-3">
-              <span className="text-cyber">07.</span>
-              <span>Get In Touch // Message Board</span>
+          <div className="mb-8 text-center mx-auto max-w-xl space-y-1">
+            <span className="font-mono text-[10px] sm:text-xs tracking-[0.2em] text-cyber uppercase block">
+              // CONTACT.DISPATCHER
+            </span>
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight font-sans justify-center flex items-center gap-3">
+              <span>Get In Touch</span>
+              <span className="text-zinc-500 font-mono text-lg sm:text-2xl font-light">/ Message Board</span>
             </h2>
-            <p className="text-zinc-400 text-sm sm:text-base font-sans leading-relaxed">
+            <p className="text-zinc-400 text-sm sm:text-base font-sans leading-relaxed pt-2">
               Compile your parameters inside the JSON dispatcher structure below to send a network packet directly to my mailbox.
             </p>
           </div>
