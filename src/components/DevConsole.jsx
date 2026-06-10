@@ -58,7 +58,7 @@ export default function DevConsole() {
   }, [activeQuery]);
 
   return (
-    <div className="max-w-3xl mx-auto w-full glass-hud rounded-lg border border-zinc-850 overflow-hidden shadow-2xl">
+    <div className="max-w-3xl mx-auto w-full glass-hud preserve-dark rounded-lg border border-zinc-850 overflow-hidden shadow-2xl">
       {/* Console Window Header */}
       <div className="bg-zinc-950/90 px-4 py-2.5 border-b border-zinc-850 flex items-center justify-between font-mono text-[10px] text-zinc-500 select-none">
         <div className="flex items-center space-x-1.5">

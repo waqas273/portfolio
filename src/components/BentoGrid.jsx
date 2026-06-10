@@ -87,6 +87,12 @@ function SkillCard({ cardData }) {
     electric: 'bg-electric/10',
   };
 
+  const bgColorsSolid = {
+    matrix: 'bg-matrix',
+    cyber: 'bg-cyber',
+    electric: 'bg-electric',
+  };
+
   const bgGlowColor = hoverBorders[accentColor] || '';
 
   return (
@@ -119,7 +125,7 @@ function SkillCard({ cardData }) {
           </span>
         </div>
         <div className="text-[10px] font-mono text-zinc-500 flex items-center space-x-1.5">
-          <span className={`w-1.5 h-1.5 rounded-full bg-${accentColor} animate-pulse`} />
+          <span className={`w-1.5 h-1.5 rounded-full ${bgColorsSolid[accentColor]} animate-pulse`} />
           <span className="uppercase text-[9px]">{accentColor}_online</span>
         </div>
       </div>
@@ -143,7 +149,7 @@ function SkillCard({ cardData }) {
           <div key={index} className="space-y-1.5 group/skill">
             <div className="flex justify-between items-center text-xs">
               <span className="font-medium text-zinc-300 group-hover/skill:text-white transition-colors flex items-center space-x-1.5">
-                <span className={`w-1 h-1 rounded-full bg-${accentColor}`} />
+                <span className={`w-1 h-1 rounded-full ${bgColorsSolid[accentColor]}`} />
                 <span>{skill.name}</span>
               </span>
               <div className="flex items-center space-x-2 select-none">
@@ -160,7 +166,7 @@ function SkillCard({ cardData }) {
             <div className="relative w-full py-1">
               <div className="w-full h-1.5 bg-zinc-900/60 dark:bg-zinc-900/40 rounded-full overflow-hidden border border-zinc-850">
                 <div 
-                  className={`h-full rounded-full transition-all duration-[1200ms] ease-out bg-${accentColor}`}
+                  className={`h-full rounded-full transition-all duration-[1200ms] ease-out ${bgColorsSolid[accentColor]}`}
                   style={{ width: animated ? `${skill.percent}%` : '0%' }}
                 />
               </div>

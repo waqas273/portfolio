@@ -257,6 +257,77 @@ html.light .bg-zinc-900\/60.border-zinc-950\/10 {
   border-color: rgba(9, 9, 11, 0.05) !important;
 }
 
+/* Preserve original dark code/terminal components in light mode */
+html.light .preserve-dark,
+html.light .preserve-dark .text-white,
+html.light .preserve-dark h2,
+html.light .preserve-dark h3,
+html.light .preserve-dark h4 {
+  color: #ffffff !important;
+}
+
+html.light .preserve-dark .text-zinc-300,
+html.light .preserve-dark .text-zinc-350,
+html.light .preserve-dark .text-zinc-400,
+html.light .preserve-dark p,
+html.light .preserve-dark li,
+html.light .preserve-dark span,
+html.light .preserve-dark input,
+html.light .preserve-dark textarea {
+  color: #a1a1aa !important; /* text-zinc-400 equivalent */
+}
+
+html.light .preserve-dark .text-zinc-500 {
+  color: #71717a !important;
+}
+
+html.light .preserve-dark .bg-zinc-950 {
+  background-color: #09090b !important;
+}
+
+html.light .preserve-dark .bg-zinc-950\/20,
+html.light .preserve-dark .bg-zinc-950\/30,
+html.light .preserve-dark .bg-zinc-950\/35,
+html.light .preserve-dark .bg-zinc-950\/40,
+html.light .preserve-dark .bg-zinc-950\/45,
+html.light .preserve-dark .bg-zinc-950\/50,
+html.light .preserve-dark .bg-zinc-950\/60 {
+  background-color: rgba(9, 9, 11, 0.5) !important;
+}
+
+html.light .preserve-dark .bg-zinc-950\/90,
+html.light .preserve-dark .bg-zinc-950\/80 {
+  background-color: #040405 !important;
+}
+
+html.light .preserve-dark .bg-zinc-900,
+html.light .preserve-dark .bg-zinc-900\/40,
+html.light .preserve-dark .bg-zinc-900\/50,
+html.light .preserve-dark .bg-zinc-900\/60 {
+  background-color: #1a1a1e !important;
+  color: #e4e4e7 !important;
+}
+
+html.light .preserve-dark .border-zinc-800,
+html.light .preserve-dark .border-zinc-850,
+html.light .preserve-dark .border-zinc-900,
+html.light .preserve-dark .border-zinc-800\/80,
+html.light .preserve-dark .border-zinc-900\/60 {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+html.light .preserve-dark input,
+html.light .preserve-dark textarea {
+  background-color: rgba(9, 9, 11, 0.6) !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+html.light .preserve-dark input::placeholder,
+html.light .preserve-dark textarea::placeholder {
+  color: #52525b !important;
+}
+
 /* Holographic Avatar Animations & Dynamic Overlay Glows */
 @keyframes hologramScan {
   0% { top: 0%; opacity: 0; }

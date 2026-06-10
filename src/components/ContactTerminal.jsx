@@ -68,7 +68,7 @@ export default function ContactTerminal() {
     <div className="w-full max-w-2xl mx-auto">
       <form 
         onSubmit={handleSubmit}
-        className={`rounded-lg overflow-hidden glass-hud border transition-all duration-500 flex flex-col h-[450px] shadow-2xl ${
+        className={`rounded-lg preserve-dark overflow-hidden glass-hud border transition-all duration-500 flex flex-col h-[450px] shadow-2xl ${
           status === 'error' ? 'border-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.25)]' :
           status === 'success' ? 'border-matrix shadow-[0_0_20px_rgba(0,255,102,0.25)]' :
           status === 'sending' ? 'border-cyber shadow-[0_0_20px_rgba(0,255,255,0.25)]' :

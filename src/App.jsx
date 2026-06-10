@@ -97,7 +97,7 @@ export default function App() {
             </div>
             
             {/* Unified System Configuration Window */}
-            <div className="glass-hud rounded-lg border border-zinc-800/80 shadow-2xl overflow-hidden">
+            <div className="glass-hud preserve-dark rounded-lg border border-zinc-800/80 shadow-2xl overflow-hidden">
               {/* Window Header */}
               <div className="bg-zinc-950/90 px-4 py-2 border-b border-zinc-800 flex items-center justify-between font-mono text-[10px] text-zinc-500 select-none">
                 <div className="flex items-center space-x-1.5">
@@ -112,7 +112,7 @@ export default function App() {
               {/* Content Panel Grid */}
               <div className="p-6 sm:p-8 bg-zinc-950/20 grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
                 {/* Left Column - Narrative and telemetry */}
-                <div className="md:col-span-7 space-y-6">
+                <div className="md:col-span-7 space-y-6 order-2 md:order-1">
                   
                   {/* Biography styled paragraph */}
                   <div className="relative border-l-2 border-matrix/50 pl-4 space-y-1">
@@ -212,7 +212,7 @@ export default function App() {
                 </div>
                 
                 {/* Right Column - DP Avatar Box */}
-                <div className="md:col-span-5 flex justify-center">
+                <div className="md:col-span-5 flex justify-center order-1 md:order-2">
                   <div 
                     className="relative group cursor-pointer p-4 rounded-lg bg-zinc-950/5 hover:bg-zinc-950/15 border border-transparent hover:border-zinc-900/30 transition-all duration-500"
                     onMouseMove={handleAvatarMouseMove}
