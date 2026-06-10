@@ -1,37 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Terminal, User, Cpu, FolderGit2, Briefcase, Mail, Download, Wifi, GraduationCap } from 'lucide-react';
+import { Terminal, User, Cpu, FolderGit2, Briefcase, Mail, Download, GraduationCap } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 
 const SECTIONS = ['home', 'about', 'education', 'skills', 'projects', 'experience', 'contact'];
 
 export default function Navbar() {
   const [activeSection, setActiveSection] = useState('home');
-  const [ping, setPing] = useState(24);
-  const [time, setTime] = useState('');
-
-  // Live telemetry (time & fake ping fluctuations to mimic active dashboard)
-  useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      setTime(now.toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }));
-    };
-    
-    updateTime();
-    const timerInterval = setInterval(updateTime, 1000);
-    
-    const pingInterval = setInterval(() => {
-      setPing(prev => {
-        const change = Math.floor(Math.random() * 7) - 3; // -3 to +3
-        const next = prev + change;
-        return next > 45 ? 45 : next < 12 ? 12 : next;
-      });
-    }, 4000);
-
-    return () => {
-      clearInterval(timerInterval);
-      clearInterval(pingInterval);
-    };
-  }, []);
 
   // Scroll spy implementation
   useEffect(() => {
@@ -96,17 +70,6 @@ export default function Navbar() {
               <span className="font-mono text-xs font-semibold tracking-wider text-white">
                 SYS: ACTIVE
               </span>
-            </div>
-            <div className="h-4 w-[1px] bg-zinc-800" />
-            <div className="flex items-center space-x-1 font-mono text-[10px] text-zinc-500">
-              <Wifi className="w-3.5 h-3.5 text-cyber/80" />
-              <span>PING: </span>
-              <span className="text-zinc-400 font-semibold">{ping}ms</span>
-            </div>
-            <div className="h-4 w-[1px] bg-zinc-800" />
-            <div className="font-mono text-[10px] text-zinc-500">
-              <span>LOC: </span>
-              <span className="text-zinc-400 font-semibold">{time || '00:00:00'}</span>
             </div>
           </div>
 
