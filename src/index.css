@@ -208,19 +208,98 @@ html.light .text-zinc-500 {
 html.light .bg-zinc-950 {
   background-color: #ffffff !important;
 }
+
+/* Window Content Panel Bodies (white/semi-translucent white) */
 html.light .bg-zinc-950\/20,
 html.light .bg-zinc-950\/30,
+html.light .bg-zinc-950\/35,
 html.light .bg-zinc-950\/40,
 html.light .bg-zinc-950\/45,
 html.light .bg-zinc-950\/50,
 html.light .bg-zinc-950\/60,
-html.light .bg-zinc-950\/80,
-html.light .bg-zinc-950\/85,
-html.light .bg-zinc-950\/90,
 html.light .bg-zinc-900\/50,
 html.light .bg-zinc-900\/60 {
-  background-color: rgba(255, 255, 255, 0.85) !important;
+  background-color: #ffffff !important; /* solid white content panels */
 }
+
+/* Window Header Bars (distinct light grey for macOS/Windows layout separation) */
+html.light .bg-zinc-950\/90,
+html.light .bg-zinc-950\/85,
+html.light .bg-zinc-950\/80 {
+  background-color: #f4f4f5 !important;
+  border-bottom-color: rgba(9, 9, 11, 0.08) !important;
+}
+
+/* Light mode high-contrast text settings */
+html.light .text-white,
+html.light h1,
+html.light h2,
+html.light h3,
+html.light h4 {
+  color: #09090b !important;
+}
+
+/* General body/narrative slate grey text color */
+html.light .text-zinc-300,
+html.light .text-zinc-350,
+html.light .text-zinc-400,
+html.light p,
+html.light li {
+  color: #27272a !important; /* high-contrast dark slate */
+}
+
+html.light .text-zinc-500 {
+  color: #71717a !important;
+}
+
+html.light .text-zinc-600,
+html.light .text-zinc-650 {
+  color: #52525b !important;
+}
+
+/* Inactive button backgrounds / selections */
+html.light .bg-zinc-900 {
+  background-color: #e4e4e7 !important;
+  color: #18181b !important;
+}
+
+html.light .bg-zinc-900\/40 {
+  background-color: #f4f4f5 !important;
+  color: #27272a !important;
+  border-color: rgba(9, 9, 11, 0.12) !important;
+}
+
+/* Interactive inputs and textareas (clean light grey background with soft borders) */
+html.light input,
+html.light textarea,
+html.light select {
+  background-color: #fafafa !important;
+  color: #09090b !important;
+  border-color: rgba(9, 9, 11, 0.15) !important;
+}
+
+html.light input::placeholder,
+html.light textarea::placeholder {
+  color: #a1a1aa !important;
+}
+
+/* High-contrast Code highlighting tags in light mode */
+html.light .text-purple-400 {
+  color: #7c3aed !important; /* violet-600 */
+  font-weight: 600;
+}
+html.light .text-blue-400 {
+  color: #0284c7 !important; /* sky-600 */
+  font-weight: 600;
+}
+html.light .text-cyan-400 {
+  color: #0d9488 !important; /* teal-600 */
+}
+html.light .text-amber-400 {
+  color: #b45309 !important; /* amber-700 */
+}
+
+/* Border styles in light mode */
 html.light .border-zinc-800,
 html.light .border-zinc-850,
 html.light .border-zinc-900,
@@ -229,18 +308,9 @@ html.light .border-zinc-900\/60,
 html.light .border-zinc-950 {
   border-color: rgba(9, 9, 11, 0.12) !important;
 }
+
 html.light .shadow-2xl {
   box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08), 0 8px 15px -10px rgba(0, 0, 0, 0.05) !important;
-}
-html.light .text-zinc-600 {
-  color: #52525b !important;
-}
-html.light .text-zinc-650 {
-  color: #52525b !important;
-}
-html.light .bg-zinc-900 {
-  background-color: #e4e4e7 !important;
-  color: #18181b !important;
 }
 
 /* Disable text glows in light mode to maintain sharp typography */
@@ -255,77 +325,6 @@ html.light .bg-zinc-900\/60.border-zinc-950,
 html.light .bg-zinc-900\/60.border-zinc-950\/10 {
   background-color: #e4e4e7 !important;
   border-color: rgba(9, 9, 11, 0.05) !important;
-}
-
-/* Preserve original dark code/terminal components in light mode */
-html.light .preserve-dark,
-html.light .preserve-dark .text-white,
-html.light .preserve-dark h2,
-html.light .preserve-dark h3,
-html.light .preserve-dark h4 {
-  color: #ffffff !important;
-}
-
-html.light .preserve-dark .text-zinc-300,
-html.light .preserve-dark .text-zinc-350,
-html.light .preserve-dark .text-zinc-400,
-html.light .preserve-dark p,
-html.light .preserve-dark li,
-html.light .preserve-dark span,
-html.light .preserve-dark input,
-html.light .preserve-dark textarea {
-  color: #a1a1aa !important; /* text-zinc-400 equivalent */
-}
-
-html.light .preserve-dark .text-zinc-500 {
-  color: #71717a !important;
-}
-
-html.light .preserve-dark .bg-zinc-950 {
-  background-color: #09090b !important;
-}
-
-html.light .preserve-dark .bg-zinc-950\/20,
-html.light .preserve-dark .bg-zinc-950\/30,
-html.light .preserve-dark .bg-zinc-950\/35,
-html.light .preserve-dark .bg-zinc-950\/40,
-html.light .preserve-dark .bg-zinc-950\/45,
-html.light .preserve-dark .bg-zinc-950\/50,
-html.light .preserve-dark .bg-zinc-950\/60 {
-  background-color: rgba(9, 9, 11, 0.5) !important;
-}
-
-html.light .preserve-dark .bg-zinc-950\/90,
-html.light .preserve-dark .bg-zinc-950\/80 {
-  background-color: #040405 !important;
-}
-
-html.light .preserve-dark .bg-zinc-900,
-html.light .preserve-dark .bg-zinc-900\/40,
-html.light .preserve-dark .bg-zinc-900\/50,
-html.light .preserve-dark .bg-zinc-900\/60 {
-  background-color: #1a1a1e !important;
-  color: #e4e4e7 !important;
-}
-
-html.light .preserve-dark .border-zinc-800,
-html.light .preserve-dark .border-zinc-850,
-html.light .preserve-dark .border-zinc-900,
-html.light .preserve-dark .border-zinc-800\/80,
-html.light .preserve-dark .border-zinc-900\/60 {
-  border-color: rgba(255, 255, 255, 0.08) !important;
-}
-
-html.light .preserve-dark input,
-html.light .preserve-dark textarea {
-  background-color: rgba(9, 9, 11, 0.6) !important;
-  color: #ffffff !important;
-  border-color: rgba(255, 255, 255, 0.12) !important;
-}
-
-html.light .preserve-dark input::placeholder,
-html.light .preserve-dark textarea::placeholder {
-  color: #52525b !important;
 }
 
 /* Holographic Avatar Animations & Dynamic Overlay Glows */

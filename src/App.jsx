@@ -97,7 +97,7 @@ export default function App() {
             </div>
             
             {/* Unified System Configuration Window */}
-            <div className="glass-hud preserve-dark rounded-lg border border-zinc-800/80 shadow-2xl overflow-hidden">
+            <div className="glass-hud rounded-lg border border-zinc-800/80 shadow-2xl overflow-hidden">
               {/* Window Header */}
               <div className="bg-zinc-950/90 px-4 py-2 border-b border-zinc-800 flex items-center justify-between font-mono text-[10px] text-zinc-500 select-none">
                 <div className="flex items-center space-x-1.5">
