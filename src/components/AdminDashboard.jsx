@@ -259,13 +259,13 @@ export default function AdminDashboard() {
       return;
     }
 
-    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
-    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
-    const avatarUrl = import.meta.env.VITE_EMAILJS_AVATAR_URL;
+    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_uqsyfa5';
+    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'template_a7asz69';
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'W1IquHHwgOi2bFZ9V';
+    const avatarUrl = import.meta.env.VITE_EMAILJS_AVATAR_URL || 'https://plain-eeur-prod-public.komododecks.com/202606/10/WTCPLIgKHwJXvmDjczaz/image.jpg';
 
     if (!serviceId || serviceId === 'your_emailjs_service_id' || !publicKey) {
-      alert("EmailJS is not fully configured in your local .env file. Please edit your VITE_EMAILJS_... environment variables.");
+      alert("EmailJS is not fully configured. Please edit your VITE_EMAILJS_... environment variables.");
       return;
     }
 
