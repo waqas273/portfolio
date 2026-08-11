@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { auth, db } from '../firebase';
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, setDoc, collection, getDocs, deleteDoc, addDoc, updateDoc } from 'firebase/firestore';
-import { Terminal, Shield, LogOut, Save, Plus, Trash2, Edit2, Mail, Briefcase, FileCode, Cpu, Loader2 } from 'lucide-react';
+import { Terminal, Shield, LogOut, Save, Plus, Trash2, Edit2, Mail, Briefcase, FileCode, Cpu, Loader2, Upload, Image, X } from 'lucide-react';
 import emailjs from '@emailjs/browser';
 import ThemeToggle from './ThemeToggle';
 
@@ -49,6 +49,47 @@ export default function AdminDashboard() {
   const [replyingToId, setReplyingToId] = useState(null);
   const [replyText, setReplyText] = useState({});
   const [replyStatus, setReplyStatus] = useState({});
+
+  // Image Upload state
+  const [uploadingImage, setUploadingImage] = useState(false);
+
+  // Handle direct file upload to Cloudinary
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'suzllkcp';
+    const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'portfolio';
+
+    if (!cloudName || !uploadPreset) {
+      alert("Cloudinary configuration is missing!");
+      return;
+    }
+
+    setUploadingImage(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', uploadPreset);
+
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (data.secure_url) {
+        setProjectForm(prev => ({ ...prev, image: data.secure_url }));
+      } else {
+        alert("Cloudinary Upload Failed: " + (data.error?.message || "Invalid upload parameters"));
+      }
+    } catch (err) {
+      console.error("Cloudinary upload error: ", err);
+      alert("Failed to upload image to Cloudinary.");
+    } finally {
+      setUploadingImage(false);
+    }
+  };
 
   // Monitor Auth State
   useEffect(() => {
@@ -599,15 +640,81 @@ export default function AdminDashboard() {
                   </select>
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-zinc-500">IMAGE_URL</label>
-                  <input 
-                    type="url"
-                    value={projectForm.image}
-                    onChange={(e) => setProjectForm(p => ({ ...p, image: e.target.value }))}
-                    placeholder="https://images.unsplash.com/..."
-                    className="w-full p-2 rounded bg-zinc-900/60 border border-zinc-800 outline-none text-white focus:border-cyber"
-                  />
+                <div className="space-y-2 col-span-1 md:col-span-2">
+                  <label className="text-zinc-500 font-mono text-xs flex justify-between items-center">
+                    <span>PROJECT_IMAGE // CLOUDINARY_STORAGE</span>
+                    {projectForm.image && (
+                      <span className="text-[10px] text-matrix font-semibold">// IMAGE_READY</span>
+                    )}
+                  </label>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                    {/* File Upload Box */}
+                    <div className="sm:col-span-7 flex flex-col space-y-2">
+                      <label className={`relative border border-dashed rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer transition-all duration-300 ${
+                        uploadingImage 
+                          ? 'border-cyber bg-cyber/5 animate-pulse' 
+                          : 'border-zinc-800 bg-zinc-950/60 hover:border-cyber/50 hover:bg-zinc-900/40'
+                      }`}>
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          onChange={handleImageUpload} 
+                          className="hidden" 
+                          disabled={uploadingImage}
+                        />
+                        <div className="flex items-center space-x-2 text-xs font-mono">
+                          {uploadingImage ? (
+                            <>
+                              <Loader2 className="w-4 h-4 text-cyber animate-spin" />
+                              <span className="text-cyber font-semibold">UPLOADING_TO_CLOUDINARY...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Upload className="w-4 h-4 text-cyber" />
+                              <span className="text-zinc-300 font-medium">Click to Upload Image File</span>
+                            </>
+                          )}
+                        </div>
+                        <span className="text-[9px] text-zinc-600 font-mono mt-1">PNG, JPG, WEBP, GIF (Direct to Cloudinary CDN)</span>
+                      </label>
+
+                      {/* Fallback Manual URL Input */}
+                      <input 
+                        type="text"
+                        value={projectForm.image}
+                        onChange={(e) => setProjectForm(p => ({ ...p, image: e.target.value }))}
+                        placeholder="Or paste image URL (https://...)"
+                        className="w-full p-2 rounded bg-zinc-950/40 border border-zinc-900 outline-none text-white text-xs font-mono focus:border-cyber/40"
+                      />
+                    </div>
+
+                    {/* Image Preview Box */}
+                    <div className="sm:col-span-5 flex flex-col items-center justify-center">
+                      {projectForm.image ? (
+                        <div className="relative group w-full h-24 rounded border border-zinc-800 bg-zinc-950 overflow-hidden">
+                          <img 
+                            src={projectForm.image} 
+                            alt="Project Thumbnail" 
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setProjectForm(p => ({ ...p, image: '' }))}
+                            className="absolute top-1 right-1 p-1 rounded-full bg-zinc-950/80 text-rose-400 hover:text-white hover:bg-rose-600 transition-all shadow"
+                            title="Remove Image"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="w-full h-24 rounded border border-zinc-900 bg-zinc-950/30 flex flex-col items-center justify-center text-zinc-600 text-xs font-mono">
+                          <Image className="w-6 h-6 mb-1 opacity-40" />
+                          <span>No Image Selected</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
                 <div className="space-y-1">
