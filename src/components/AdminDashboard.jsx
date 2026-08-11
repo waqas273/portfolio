@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { auth, db } from '../firebase';
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, setDoc, collection, getDocs, deleteDoc, addDoc, updateDoc } from 'firebase/firestore';
-import { Terminal, Shield, LogOut, Save, Plus, Trash2, Edit2, Mail, Briefcase, FileCode, Cpu, Loader2, Upload, Image, X } from 'lucide-react';
+import { Terminal, Shield, LogOut, Save, Plus, Trash2, Edit2, Mail, Briefcase, FileCode, Cpu, Loader2, Upload, Image, X, Search, Filter, Sparkles, Layers, ExternalLink, FolderPlus, Check } from 'lucide-react';
 import emailjs from '@emailjs/browser';
 import ThemeToggle from './ThemeToggle';
 
@@ -45,6 +45,43 @@ export default function AdminDashboard() {
     category: 'Full-Stack',
     fileName: 'App.jsx',
     gallery: [] // Array of { url: '', caption: '' }
+  });
+
+  // Projects CMS UI states & search filters
+  const [formSubTab, setFormSubTab] = useState('general'); // 'general' | 'specs' | 'media'
+  const [projectSearchQuery, setProjectSearchQuery] = useState('');
+
+  // Reset form handler
+  const handleResetProjectForm = () => {
+    setProjectForm({
+      id: '',
+      title: '',
+      description: '',
+      longDescription: '',
+      features: '',
+      techStack: '',
+      liveLink: '',
+      githubLink: '',
+      image: '',
+      category: 'Full-Stack',
+      fileName: 'App.jsx',
+      gallery: []
+    });
+    setFormSubTab('general');
+  };
+
+  // Metrics & Search Filtering
+  const fullStackCount = projectsList.filter(p => p.category === 'Full-Stack').length;
+  const frontendCount = projectsList.filter(p => p.category === 'Frontend').length;
+
+  const filteredProjectsList = projectsList.filter(proj => {
+    if (!projectSearchQuery.trim()) return true;
+    const q = projectSearchQuery.toLowerCase();
+    const titleMatch = proj.title?.toLowerCase().includes(q);
+    const catMatch = proj.category?.toLowerCase().includes(q);
+    const techMatch = Array.isArray(proj.techStack) && proj.techStack.some(t => t.toLowerCase().includes(q));
+    const fileMatch = proj.fileName?.toLowerCase().includes(q);
+    return titleMatch || catMatch || techMatch || fileMatch;
   });
 
   // Messages inbox state
@@ -350,6 +387,7 @@ export default function AdminDashboard() {
       fileName: proj.fileName || 'App.jsx',
       gallery: proj.gallery && Array.isArray(proj.gallery) ? proj.gallery : (proj.image ? [{ url: proj.image, caption: proj.description || '' }] : [])
     });
+    setFormSubTab('general');
   };
 
   // Delete Project Handler
@@ -658,342 +696,534 @@ export default function AdminDashboard() {
           </form>
         )}
 
-        {/* Tab 2: Projects CRUD */}
+        {/* Tab 2: Projects CRUD - ULTRA PRO MAX REDESIGN */}
         {activeTab === 'projects' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          <div className="space-y-6">
             
-            {/* Project form */}
-            <form onSubmit={handleSaveProject} className="lg:col-span-5 glass-hud rounded-lg border border-zinc-850 p-6 space-y-4 font-mono text-xs">
-              <h2 className="text-sm font-bold text-white uppercase flex items-center space-x-2">
-                <Plus className="w-4 h-4 text-cyber" />
-                <span>{projectForm.id ? 'Edit Project Node' : 'Register New Project'}</span>
-              </h2>
+            {/* Top Action & Statistics Header Bar */}
+            <div className="glass-hud rounded-lg border border-zinc-850 p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              
+              {/* Projects Metrics */}
+              <div className="flex flex-wrap items-center gap-3 font-mono text-xs">
+                <div className="flex items-center space-x-2 bg-zinc-950/80 px-3 py-1.5 rounded border border-zinc-850">
+                  <Briefcase className="w-4 h-4 text-electric" />
+                  <span className="text-zinc-400">Total Nodes:</span>
+                  <span className="text-white font-bold">{projectsList.length}</span>
+                </div>
+                <div className="flex items-center space-x-2 bg-zinc-950/80 px-3 py-1.5 rounded border border-zinc-850">
+                  <span className="w-2 h-2 rounded-full bg-cyber" />
+                  <span className="text-zinc-400">Full-Stack:</span>
+                  <span className="text-cyber font-bold">{fullStackCount}</span>
+                </div>
+                <div className="flex items-center space-x-2 bg-zinc-950/80 px-3 py-1.5 rounded border border-zinc-850">
+                  <span className="w-2 h-2 rounded-full bg-matrix" />
+                  <span className="text-zinc-400">Frontend:</span>
+                  <span className="text-matrix font-bold">{frontendCount}</span>
+                </div>
+              </div>
 
-              <div className="space-y-3">
-                <div className="space-y-1">
-                  <label className="text-zinc-500">PROJECT_TITLE</label>
-                  <input 
+              {/* Search Bar & Add Project CTA */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
+                <div className="relative flex-1 sm:w-64">
+                  <Search className="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
                     type="text"
-                    value={projectForm.title}
-                    onChange={(e) => setProjectForm(p => ({ ...p, title: e.target.value }))}
-                    className="w-full p-2 rounded bg-zinc-900/60 border border-zinc-800 outline-none text-white focus:border-cyber"
-                    required
+                    value={projectSearchQuery}
+                    onChange={(e) => setProjectSearchQuery(e.target.value)}
+                    placeholder="Search projects..."
+                    className="w-full bg-zinc-950/80 border border-zinc-850 rounded pl-9 pr-3 py-1.5 text-xs font-mono text-white placeholder-zinc-600 outline-none focus:border-cyber/50 transition-all"
                   />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-zinc-500">FILE_EXTENSION_NAME (tab)</label>
-                  <input 
-                    type="text"
-                    value={projectForm.fileName}
-                    onChange={(e) => setProjectForm(p => ({ ...p, fileName: e.target.value }))}
-                    placeholder="Dashboard.tsx"
-                    className="w-full p-2 rounded bg-zinc-900/60 border border-zinc-800 outline-none text-white focus:border-cyber"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-zinc-500">SHORT_DESCRIPTION (Card summary)</label>
-                  <textarea 
-                    value={projectForm.description}
-                    onChange={(e) => setProjectForm(p => ({ ...p, description: e.target.value }))}
-                    rows={2}
-                    className="w-full p-2 rounded bg-zinc-900/60 border border-zinc-800 outline-none text-white focus:border-cyber resize-none"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-zinc-500">LONG_DESCRIPTION (Detailed Narrative for Specs Page)</label>
-                  <textarea 
-                    value={projectForm.longDescription}
-                    onChange={(e) => setProjectForm(p => ({ ...p, longDescription: e.target.value }))}
-                    rows={3}
-                    placeholder="Enter comprehensive narrative, database structure, and module overview..."
-                    className="w-full p-2 rounded bg-zinc-900/60 border border-zinc-800 outline-none text-white focus:border-cyber resize-none"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-zinc-500">CORE_CAPABILITIES (Key features list - One per line)</label>
-                  <textarea 
-                    value={projectForm.features}
-                    onChange={(e) => setProjectForm(p => ({ ...p, features: e.target.value }))}
-                    rows={3}
-                    placeholder="Real-time WebSockets telemetry&#10;OAuth 2.0 multi-tenant auth&#10;Automated Cloudinary media pipeline"
-                    className="w-full p-2 rounded bg-zinc-900/60 border border-zinc-800 outline-none text-white focus:border-cyber resize-none font-mono text-xs"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-zinc-500">TECH_STACK (Comma separated)</label>
-                  <input 
-                    type="text"
-                    value={projectForm.techStack}
-                    onChange={(e) => setProjectForm(p => ({ ...p, techStack: e.target.value }))}
-                    placeholder="React, Firebase, Tailwind"
-                    className="w-full p-2 rounded bg-zinc-900/60 border border-zinc-800 outline-none text-white focus:border-cyber"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-zinc-500">CATEGORY</label>
-                  <select 
-                    value={projectForm.category}
-                    onChange={(e) => setProjectForm(p => ({ ...p, category: e.target.value }))}
-                    className="w-full p-2 rounded bg-zinc-900/60 border border-zinc-800 outline-none text-white focus:border-cyber"
-                  >
-                    <option value="Full-Stack">Full-Stack</option>
-                    <option value="Frontend">Frontend</option>
-                  </select>
-                </div>
-
-                {/* Multi-Screenshot Gallery & Page Explanations Section */}
-                <div className="space-y-3 col-span-1 md:col-span-2 border-t border-zinc-900 pt-4">
-                  <div className="flex items-center justify-between">
-                    <label className="text-matrix font-mono text-xs font-semibold flex items-center space-x-2">
-                      <Plus className="w-3.5 h-3.5" />
-                      <span>// PAGE_SCREENSHOTS_GALLERY (Auto-Sliding Carousel + Page Explanations)</span>
-                    </label>
+                  {projectSearchQuery && (
                     <button
-                      type="button"
-                      onClick={handleAddGallerySlide}
-                      className="px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-matrix hover:border-matrix text-xs font-mono flex items-center space-x-1 transition-all"
+                      onClick={() => setProjectSearchQuery('')}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white"
                     >
-                      <Plus className="w-3 h-3" />
-                      <span>Add Page Screenshot</span>
+                      <X className="w-3 h-3" />
                     </button>
-                  </div>
-
-                  {(!projectForm.gallery || projectForm.gallery.length === 0) ? (
-                    <div className="p-4 rounded border border-dashed border-zinc-900 bg-zinc-950/30 text-center text-xs font-mono text-zinc-600">
-                      No multi-page screenshots added yet. Click "+ Add Page Screenshot" to add slides with individual page descriptions.
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {projectForm.gallery.map((item, idx) => (
-                        <div key={idx} className="p-3 rounded border border-zinc-850 bg-zinc-950/60 grid grid-cols-1 sm:grid-cols-12 gap-3 items-start relative">
-                          <div className="sm:col-span-1 text-[10px] font-mono text-matrix font-bold pt-2">
-                            #{idx + 1}
-                          </div>
-
-                          {/* Screenshot Upload / URL */}
-                          <div className="sm:col-span-4 space-y-2">
-                            <label className="relative border border-dashed border-zinc-800 hover:border-cyber/50 rounded p-2 flex flex-col items-center justify-center cursor-pointer bg-zinc-950/40 text-xs font-mono text-zinc-400">
-                              <input 
-                                type="file" 
-                                accept="image/*" 
-                                onChange={(e) => handleGalleryImageUpload(e, idx)} 
-                                className="hidden" 
-                                disabled={uploadingImage}
-                              />
-                              <Upload className="w-3.5 h-3.5 text-cyber mb-1" />
-                              <span>Upload Screenshot</span>
-                            </label>
-                            <input 
-                              type="text"
-                              value={item.url || ''}
-                              onChange={(e) => handleUpdateGalleryItem(idx, 'url', e.target.value)}
-                              placeholder="Image URL (https://...)"
-                              className="w-full p-1.5 rounded bg-zinc-900/80 border border-zinc-800 text-xs font-mono text-white outline-none focus:border-cyber/40"
-                            />
-                          </div>
-
-                          {/* Page Explanation Input */}
-                          <div className="sm:col-span-6 space-y-1">
-                            <label className="text-[10px] text-zinc-500 font-mono">PAGE EXPLANATION / FEATURE DESCRIPTION</label>
-                            <textarea
-                              value={item.caption || ''}
-                              onChange={(e) => handleUpdateGalleryItem(idx, 'caption', e.target.value)}
-                              placeholder="Describe what is shown on this page/screenshot..."
-                              rows={3}
-                              className="w-full p-2 rounded bg-zinc-900/60 border border-zinc-850 text-xs font-sans text-white outline-none focus:border-cyber resize-none"
-                            />
-                          </div>
-
-                          {/* Remove Slide Button */}
-                          <div className="sm:col-span-1 flex justify-end pt-1">
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveGallerySlide(idx)}
-                              className="p-1 rounded bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-600 hover:text-white transition-all"
-                              title="Delete Slide"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
                   )}
                 </div>
 
-                <div className="space-y-2 col-span-1 md:col-span-2">
-                  <label className="text-zinc-500 font-mono text-xs flex justify-between items-center">
-                    <span>PROJECT_IMAGE // CLOUDINARY_STORAGE</span>
-                    {projectForm.image && (
-                      <span className="text-[10px] text-matrix font-semibold">// IMAGE_READY</span>
+                <button
+                  onClick={handleResetProjectForm}
+                  className="px-3.5 py-1.5 rounded bg-cyber/10 border border-cyber text-cyber font-mono text-xs font-bold uppercase tracking-wider flex items-center justify-center space-x-1.5 hover:bg-cyber hover:text-obsidian transition-all duration-300 shadow-[0_0_12px_rgba(0,255,255,0.15)] active:scale-95 shrink-0"
+                >
+                  <FolderPlus className="w-4 h-4" />
+                  <span>+ New Project</span>
+                </button>
+              </div>
+
+            </div>
+
+            {/* Main Projects Grid: Left = Modular Form, Right = Interactive Registry */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+              
+              {/* LEFT COLUMN: Modular Sub-Tabbed Project Editor Form (7 Cols) */}
+              <form onSubmit={handleSaveProject} className="lg:col-span-7 glass-hud rounded-lg border border-zinc-850 p-5 sm:p-6 space-y-5 font-mono text-xs shadow-2xl">
+                
+                {/* Form Mode Header & Sub-Tabs Navigator */}
+                <div className="space-y-4 border-b border-zinc-900 pb-4">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                    <div className="flex items-center space-x-2">
+                      <Sparkles className="w-4 h-4 text-cyber" />
+                      <h2 className="text-sm font-bold text-white uppercase tracking-wider">
+                        {projectForm.id ? `EDITING NODE: ${projectForm.title || 'PROJECT'}` : 'REGISTER NEW PROJECT NODE'}
+                      </h2>
+                    </div>
+                    {projectForm.id && (
+                      <button
+                        type="button"
+                        onClick={handleResetProjectForm}
+                        className="px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-rose-400 hover:text-white hover:border-rose-500 text-[10px] font-mono transition-all"
+                      >
+                        Cancel Edit
+                      </button>
                     )}
-                  </label>
+                  </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
-                    {/* File Upload Box */}
-                    <div className="sm:col-span-7 flex flex-col space-y-2">
-                      <label className={`relative border border-dashed rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer transition-all duration-300 ${
-                        uploadingImage 
-                          ? 'border-cyber bg-cyber/5 animate-pulse' 
-                          : 'border-zinc-800 bg-zinc-950/60 hover:border-cyber/50 hover:bg-zinc-900/40'
-                      }`}>
-                        <input 
-                          type="file" 
-                          accept="image/*" 
-                          onChange={handleImageUpload} 
-                          className="hidden" 
-                          disabled={uploadingImage}
-                        />
-                        <div className="flex items-center space-x-2 text-xs font-mono">
-                          {uploadingImage ? (
-                            <>
-                              <Loader2 className="w-4 h-4 text-cyber animate-spin" />
-                              <span className="text-cyber font-semibold">UPLOADING_TO_CLOUDINARY...</span>
-                            </>
-                          ) : (
-                            <>
-                              <Upload className="w-4 h-4 text-cyber" />
-                              <span className="text-zinc-300 font-medium">Click to Upload Image File</span>
-                            </>
-                          )}
-                        </div>
-                        <span className="text-[9px] text-zinc-600 font-mono mt-1">PNG, JPG, WEBP, GIF (Direct to Cloudinary CDN)</span>
-                      </label>
-
-                      {/* Fallback Manual URL Input */}
-                      <input 
-                        type="text"
-                        value={projectForm.image}
-                        onChange={(e) => setProjectForm(p => ({ ...p, image: e.target.value }))}
-                        placeholder="Or paste image URL (https://...)"
-                        className="w-full p-2 rounded bg-zinc-950/40 border border-zinc-900 outline-none text-white text-xs font-mono focus:border-cyber/40"
-                      />
-                    </div>
-
-                    {/* Image Preview Box */}
-                    <div className="sm:col-span-5 flex flex-col items-center justify-center">
-                      {projectForm.image ? (
-                        <div className="relative group w-full h-24 rounded border border-zinc-800 bg-zinc-950 overflow-hidden">
-                          <img 
-                            src={projectForm.image} 
-                            alt="Project Thumbnail" 
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => setProjectForm(p => ({ ...p, image: '' }))}
-                            className="absolute top-1 right-1 p-1 rounded-full bg-zinc-950/80 text-rose-400 hover:text-white hover:bg-rose-600 transition-all shadow"
-                            title="Remove Image"
-                          >
-                            <X className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="w-full h-24 rounded border border-zinc-900 bg-zinc-950/30 flex flex-col items-center justify-center text-zinc-600 text-xs font-mono">
-                          <Image className="w-6 h-6 mb-1 opacity-40" />
-                          <span>No Image Selected</span>
-                        </div>
-                      )}
-                    </div>
+                  {/* Form Sub-Tabs Control */}
+                  <div className="flex items-center space-x-1.5 bg-zinc-950/80 p-1.5 rounded-lg border border-zinc-900">
+                    {[
+                      { id: 'general', label: '[1] General Info', icon: <FileCode className="w-3.5 h-3.5" /> },
+                      { id: 'specs', label: '[2] Tech Specs', icon: <Cpu className="w-3.5 h-3.5" /> },
+                      { id: 'media', label: `[3] Gallery (${projectForm.gallery?.length || 0})`, icon: <Image className="w-3.5 h-3.5" /> }
+                    ].map(subTab => (
+                      <button
+                        key={subTab.id}
+                        type="button"
+                        onClick={() => setFormSubTab(subTab.id)}
+                        className={`flex-1 py-1.5 px-3 rounded flex items-center justify-center space-x-1.5 font-mono text-xs uppercase tracking-wider transition-all duration-300 ${
+                          formSubTab === subTab.id 
+                            ? 'bg-cyber/10 text-cyber border-b-2 border-cyber font-bold' 
+                            : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900/50'
+                        }`}
+                      >
+                        {subTab.icon}
+                        <span className="truncate">{subTab.label}</span>
+                      </button>
+                    ))}
                   </div>
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-zinc-500">LIVE_LINK</label>
-                  <input 
-                    type="text"
-                    value={projectForm.liveLink}
-                    onChange={(e) => setProjectForm(p => ({ ...p, liveLink: e.target.value }))}
-                    placeholder="https://..."
-                    className="w-full p-2 rounded bg-zinc-900/60 border border-zinc-800 outline-none text-white focus:border-cyber"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-zinc-500">GITHUB_LINK</label>
-                  <input 
-                    type="text"
-                    value={projectForm.githubLink}
-                    onChange={(e) => setProjectForm(p => ({ ...p, githubLink: e.target.value }))}
-                    placeholder="https://github.com/..."
-                    className="w-full p-2 rounded bg-zinc-900/60 border border-zinc-800 outline-none text-white focus:border-cyber"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="flex space-x-2 pt-2">
-                <button
-                  type="submit"
-                  disabled={actionLoading}
-                  className="px-4 py-2 rounded bg-cyber text-obsidian font-bold uppercase flex items-center space-x-1 hover:scale-105 active:scale-95 transition-transform"
-                >
-                  {actionLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-                  <span>{projectForm.id ? 'Update Node' : 'Register Node'}</span>
-                </button>
-                {projectForm.id && (
-                  <button
-                    type="button"
-                    onClick={() => setProjectForm({
-                      id: '', title: '', description: '', techStack: '', liveLink: '', githubLink: '', image: '', category: 'Full-Stack', fileName: 'App.jsx'
-                    })}
-                    className="px-4 py-2 rounded bg-zinc-900 border border-zinc-850 hover:text-white hover:border-zinc-750 transition-all"
-                  >
-                    Cancel
-                  </button>
-                )}
-              </div>
-            </form>
-
-            {/* Project list table */}
-            <div className="lg:col-span-7 glass-hud rounded-lg border border-zinc-850 p-6 space-y-4">
-              <h2 className="text-sm font-bold text-white font-mono uppercase flex items-center space-x-2">
-                <Briefcase className="w-4 h-4 text-electric" />
-                <span>Active Project Nodes ({projectsList.length})</span>
-              </h2>
-
-              <div className="space-y-3 max-h-[500px] overflow-y-auto pr-1 scrollbar-thin">
-                {projectsList.length === 0 ? (
-                  <div className="text-center py-10 font-mono text-zinc-500 text-xs">NO_PROJECT_NODES_FOUND</div>
-                ) : (
-                  projectsList.map((proj) => (
-                    <div key={proj.id} className="p-3 rounded border border-zinc-900 bg-zinc-950/40 flex justify-between items-center gap-4 hover:border-zinc-800 transition-colors">
-                      <div className="font-mono text-xs overflow-hidden">
-                        <div className="text-white font-bold truncate">{proj.title}</div>
-                        <div className="text-zinc-500 text-[10px] truncate">{proj.fileName} // {proj.category}</div>
+                {/* SUB-TAB 1: GENERAL INFO */}
+                {formSubTab === 'general' && (
+                  <div className="space-y-4 animate-fadeIn">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <label className="text-zinc-500">PROJECT_TITLE *</label>
+                        <input 
+                          type="text"
+                          value={projectForm.title}
+                          onChange={(e) => setProjectForm(p => ({ ...p, title: e.target.value }))}
+                          placeholder="Quantum Cyber Dashboard"
+                          className="w-full p-2.5 rounded bg-zinc-900/60 border border-zinc-800 outline-none text-white focus:border-cyber"
+                          required
+                        />
                       </div>
-                      <div className="flex space-x-2 shrink-0">
-                        <button
-                          onClick={() => handleEditProjectClick(proj)}
-                          className="p-1.5 rounded bg-zinc-900 border border-zinc-850 text-zinc-400 hover:text-cyber hover:border-cyber/30 transition-all"
-                          title="Edit Node"
-                        >
-                          <Edit2 className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteProject(proj.id)}
-                          className="p-1.5 rounded bg-rose-600/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-white transition-all"
-                          title="Delete Node"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
+
+                      <div className="space-y-1">
+                        <label className="text-zinc-500">FILE_NAME (Code Tab) *</label>
+                        <input 
+                          type="text"
+                          value={projectForm.fileName}
+                          onChange={(e) => setProjectForm(p => ({ ...p, fileName: e.target.value }))}
+                          placeholder="Dashboard.tsx"
+                          className="w-full p-2.5 rounded bg-zinc-900/60 border border-zinc-800 outline-none text-white focus:border-cyber"
+                          required
+                        />
                       </div>
                     </div>
-                  ))
-                )}
-              </div>
-            </div>
 
+                    <div className="space-y-1">
+                      <label className="text-zinc-500">CATEGORY *</label>
+                      <select 
+                        value={projectForm.category}
+                        onChange={(e) => setProjectForm(p => ({ ...p, category: e.target.value }))}
+                        className="w-full p-2.5 rounded bg-zinc-900/60 border border-zinc-800 outline-none text-white focus:border-cyber"
+                      >
+                        <option value="Full-Stack">Full-Stack</option>
+                        <option value="Frontend">Frontend</option>
+                      </select>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-zinc-500">SHORT_SUMMARY (Card snippet) *</label>
+                      <textarea 
+                        value={projectForm.description}
+                        onChange={(e) => setProjectForm(p => ({ ...p, description: e.target.value }))}
+                        rows={2}
+                        placeholder="High-performance developer tracking matrix linking Firestore telemetry streams..."
+                        className="w-full p-2.5 rounded bg-zinc-900/60 border border-zinc-800 outline-none text-white focus:border-cyber resize-none"
+                        required
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <label className="text-zinc-500">LIVE_DEMO_LINK *</label>
+                        <input 
+                          type="text"
+                          value={projectForm.liveLink}
+                          onChange={(e) => setProjectForm(p => ({ ...p, liveLink: e.target.value }))}
+                          placeholder="https://..."
+                          className="w-full p-2.5 rounded bg-zinc-900/60 border border-zinc-800 outline-none text-white focus:border-cyber"
+                          required
+                        />
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-zinc-500">GITHUB_REPOSITORY_LINK (Optional)</label>
+                        <input 
+                          type="text"
+                          value={projectForm.githubLink}
+                          onChange={(e) => setProjectForm(p => ({ ...p, githubLink: e.target.value }))}
+                          placeholder="https://github.com/..."
+                          className="w-full p-2.5 rounded bg-zinc-900/60 border border-zinc-800 outline-none text-white focus:border-cyber"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* SUB-TAB 2: TECH SPECS & NARRATIVE */}
+                {formSubTab === 'specs' && (
+                  <div className="space-y-4 animate-fadeIn">
+                    <div className="space-y-1">
+                      <label className="text-zinc-500">TECH_STACK (Comma separated) *</label>
+                      <input 
+                        type="text"
+                        value={projectForm.techStack}
+                        onChange={(e) => setProjectForm(p => ({ ...p, techStack: e.target.value }))}
+                        placeholder="React, Firebase, Tailwind, Node.js"
+                        className="w-full p-2.5 rounded bg-zinc-900/60 border border-zinc-800 outline-none text-white focus:border-cyber"
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-zinc-500">LONG_DESCRIPTION (Detailed Narrative for Specs Page)</label>
+                      <textarea 
+                        value={projectForm.longDescription}
+                        onChange={(e) => setProjectForm(p => ({ ...p, longDescription: e.target.value }))}
+                        rows={4}
+                        placeholder="Enter comprehensive architecture overview, system design, and database schema..."
+                        className="w-full p-2.5 rounded bg-zinc-900/60 border border-zinc-800 outline-none text-white focus:border-cyber resize-none font-sans text-xs"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-zinc-500">CORE_CAPABILITIES (Key features list - One per line)</label>
+                      <textarea 
+                        value={projectForm.features}
+                        onChange={(e) => setProjectForm(p => ({ ...p, features: e.target.value }))}
+                        rows={4}
+                        placeholder="Real-time WebSockets telemetry stream&#10;OAuth 2.0 multi-tenant authentication&#10;Automated Cloudinary media pipeline"
+                        className="w-full p-2.5 rounded bg-zinc-900/60 border border-zinc-800 outline-none text-white focus:border-cyber resize-none font-mono text-xs"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* SUB-TAB 3: MEDIA & SCREENSHOTS GALLERY */}
+                {formSubTab === 'media' && (
+                  <div className="space-y-5 animate-fadeIn">
+                    
+                    {/* Cover Image Upload */}
+                    <div className="space-y-2">
+                      <label className="text-zinc-500 font-mono text-xs flex justify-between items-center">
+                        <span>MAIN_COVER_IMAGE // CLOUDINARY_STORAGE</span>
+                        {projectForm.image && <span className="text-[10px] text-matrix font-semibold">// COVER_READY</span>}
+                      </label>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                        <div className="sm:col-span-7 flex flex-col space-y-2">
+                          <label className={`relative border border-dashed rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer transition-all duration-300 ${
+                            uploadingImage 
+                              ? 'border-cyber bg-cyber/5 animate-pulse' 
+                              : 'border-zinc-800 bg-zinc-950/60 hover:border-cyber/50 hover:bg-zinc-900/40'
+                          }`}>
+                            <input 
+                              type="file" 
+                              accept="image/*" 
+                              onChange={handleImageUpload} 
+                              className="hidden" 
+                              disabled={uploadingImage}
+                            />
+                            <div className="flex items-center space-x-2 text-xs font-mono">
+                              {uploadingImage ? (
+                                <>
+                                  <Loader2 className="w-4 h-4 text-cyber animate-spin" />
+                                  <span className="text-cyber font-semibold">UPLOADING...</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Upload className="w-4 h-4 text-cyber" />
+                                  <span className="text-zinc-300 font-medium">Upload Cover Image</span>
+                                </>
+                              )}
+                            </div>
+                            <span className="text-[9px] text-zinc-600 font-mono mt-1">Direct to Cloudinary CDN</span>
+                          </label>
+
+                          <input 
+                            type="text"
+                            value={projectForm.image}
+                            onChange={(e) => setProjectForm(p => ({ ...p, image: e.target.value }))}
+                            placeholder="Or paste cover URL (https://...)"
+                            className="w-full p-2 rounded bg-zinc-950/40 border border-zinc-900 outline-none text-white text-xs font-mono focus:border-cyber/40"
+                          />
+                        </div>
+
+                        <div className="sm:col-span-5 flex flex-col items-center justify-center">
+                          {projectForm.image ? (
+                            <div className="relative group w-full h-24 rounded border border-zinc-800 bg-zinc-950 overflow-hidden">
+                              <img src={projectForm.image} alt="Cover Preview" className="w-full h-full object-cover" />
+                              <button
+                                type="button"
+                                onClick={() => setProjectForm(p => ({ ...p, image: '' }))}
+                                className="absolute top-1 right-1 p-1 rounded-full bg-zinc-950/80 text-rose-400 hover:text-white hover:bg-rose-600 transition-all shadow"
+                              >
+                                <X className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="w-full h-24 rounded border border-zinc-900 bg-zinc-950/30 flex flex-col items-center justify-center text-zinc-600 text-xs font-mono">
+                              <Image className="w-6 h-6 mb-1 opacity-40" />
+                              <span>No Cover Selected</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Multi-Screenshot Gallery Manager */}
+                    <div className="space-y-3 border-t border-zinc-900 pt-4">
+                      <div className="flex items-center justify-between">
+                        <label className="text-matrix font-mono text-xs font-semibold flex items-center space-x-2">
+                          <Layers className="w-4 h-4" />
+                          <span>PAGE_SCREENSHOTS_GALLERY ({projectForm.gallery?.length || 0} Slides)</span>
+                        </label>
+                        <button
+                          type="button"
+                          onClick={handleAddGallerySlide}
+                          className="px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-matrix hover:border-matrix text-xs font-mono flex items-center space-x-1 transition-all"
+                        >
+                          <Plus className="w-3 h-3" />
+                          <span>+ Add Screenshot</span>
+                        </button>
+                      </div>
+
+                      {(!projectForm.gallery || projectForm.gallery.length === 0) ? (
+                        <div className="p-4 rounded border border-dashed border-zinc-900 bg-zinc-950/30 text-center text-xs font-mono text-zinc-600">
+                          No multi-page screenshots added yet. Click "+ Add Screenshot" to create auto-sliding slides with page explanations.
+                        </div>
+                      ) : (
+                        <div className="space-y-3 max-h-[350px] overflow-y-auto pr-1 scrollbar-thin">
+                          {projectForm.gallery.map((item, idx) => (
+                            <div key={idx} className="p-3 rounded border border-zinc-850 bg-zinc-950/60 grid grid-cols-1 sm:grid-cols-12 gap-3 items-center relative">
+                              <div className="sm:col-span-1 text-[10px] font-mono text-matrix font-bold">
+                                #{idx + 1}
+                              </div>
+
+                              <div className="sm:col-span-4 space-y-1">
+                                <label className="relative border border-dashed border-zinc-800 hover:border-cyber/50 rounded p-1.5 flex flex-col items-center justify-center cursor-pointer bg-zinc-950/40 text-[11px] font-mono text-zinc-400">
+                                  <input 
+                                    type="file" 
+                                    accept="image/*" 
+                                    onChange={(e) => handleGalleryImageUpload(e, idx)} 
+                                    className="hidden" 
+                                    disabled={uploadingImage}
+                                  />
+                                  <div className="flex items-center space-x-1">
+                                    <Upload className="w-3 h-3 text-cyber" />
+                                    <span>Upload Screenshot</span>
+                                  </div>
+                                </label>
+                                <input 
+                                  type="text"
+                                  value={item.url || ''}
+                                  onChange={(e) => handleUpdateGalleryItem(idx, 'url', e.target.value)}
+                                  placeholder="Or Image URL"
+                                  className="w-full p-1.5 rounded bg-zinc-900/80 border border-zinc-800 text-[10px] font-mono text-white outline-none focus:border-cyber/40"
+                                />
+                              </div>
+
+                              <div className="sm:col-span-6 space-y-1">
+                                <textarea
+                                  value={item.caption || ''}
+                                  onChange={(e) => handleUpdateGalleryItem(idx, 'caption', e.target.value)}
+                                  placeholder="Page explanation / feature description for slide..."
+                                  rows={2}
+                                  className="w-full p-2 rounded bg-zinc-900/60 border border-zinc-850 text-xs font-sans text-white outline-none focus:border-cyber resize-none"
+                                />
+                              </div>
+
+                              <div className="sm:col-span-1 flex justify-end">
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveGallerySlide(idx)}
+                                  className="p-1 rounded bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-600 hover:text-white transition-all"
+                                  title="Delete Slide"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                  </div>
+                )}
+
+                {/* Form Action Controls Footer */}
+                <div className="flex items-center justify-between pt-4 border-t border-zinc-900">
+                  <div className="flex items-center space-x-2">
+                    {formSubTab !== 'general' && (
+                      <button
+                        type="button"
+                        onClick={() => setFormSubTab(formSubTab === 'media' ? 'specs' : 'general')}
+                        className="px-3 py-1.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white text-xs font-mono"
+                      >
+                        ← Back
+                      </button>
+                    )}
+                    {formSubTab !== 'media' && (
+                      <button
+                        type="button"
+                        onClick={() => setFormSubTab(formSubTab === 'general' ? 'specs' : 'media')}
+                        className="px-3 py-1.5 rounded bg-zinc-900 border border-zinc-800 text-cyber hover:text-white text-xs font-mono"
+                      >
+                        Next →
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <button
+                      type="submit"
+                      disabled={actionLoading}
+                      className="px-5 py-2.5 rounded bg-cyber text-obsidian font-mono text-xs font-bold uppercase tracking-wider flex items-center space-x-2 hover:scale-105 active:scale-95 transition-transform shadow-[0_0_15px_rgba(0,255,255,0.2)]"
+                    >
+                      {actionLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                      <span>{projectForm.id ? 'UPDATE NODE' : 'SAVE PROJECT NODE'}</span>
+                    </button>
+                  </div>
+                </div>
+
+              </form>
+
+              {/* RIGHT COLUMN: Interactive Projects Registry List Cards (5 Cols) */}
+              <div className="lg:col-span-5 space-y-4">
+                <div className="flex items-center justify-between font-mono text-xs border-b border-zinc-900 pb-2">
+                  <span className="text-white font-bold uppercase flex items-center space-x-2">
+                    <Briefcase className="w-4 h-4 text-electric" />
+                    <span>PROJECT NODES REGISTRY ({filteredProjectsList.length})</span>
+                  </span>
+                </div>
+
+                <div className="space-y-3 max-h-[600px] overflow-y-auto pr-1 scrollbar-thin">
+                  {filteredProjectsList.length === 0 ? (
+                    <div className="p-8 rounded border border-dashed border-zinc-900 bg-zinc-950/30 text-center font-mono text-zinc-500 text-xs">
+                      {projectSearchQuery ? 'NO_MATCHING_NODES_FOUND' : 'NO_PROJECT_NODES_FOUND'}
+                    </div>
+                  ) : (
+                    filteredProjectsList.map((proj) => {
+                      const isEditingThis = projectForm.id === proj.id;
+                      const slidesCount = proj.gallery?.length || (proj.image ? 1 : 0);
+                      return (
+                        <div 
+                          key={proj.id} 
+                          className={`p-3.5 rounded-lg border transition-all duration-300 ${
+                            isEditingThis 
+                              ? 'border-cyber bg-cyber/5 shadow-[0_0_15px_rgba(0,255,255,0.1)]' 
+                              : 'border-zinc-850 bg-zinc-950/50 hover:border-zinc-750'
+                          } flex flex-col space-y-3`}
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            {/* Cloudinary Thumbnail */}
+                            <div className="w-16 h-12 rounded border border-zinc-800 bg-zinc-950 overflow-hidden shrink-0">
+                              <img 
+                                src={proj.image || 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=200&auto=format&fit=crop'} 
+                                alt={proj.title} 
+                                className="w-full h-full object-cover" 
+                              />
+                            </div>
+
+                            <div className="flex-1 font-mono text-xs overflow-hidden">
+                              <div className="flex items-center justify-between">
+                                <h4 className="text-white font-bold truncate">{proj.title}</h4>
+                                <span className="text-[9px] px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-matrix font-semibold shrink-0">
+                                  {proj.category || 'Full-Stack'}
+                                </span>
+                              </div>
+                              <div className="text-zinc-500 text-[10px] truncate mt-0.5">
+                                {proj.fileName || 'App.jsx'} • {slidesCount} {slidesCount === 1 ? 'Slide' : 'Slides'}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Tech Stack Pills */}
+                          {proj.techStack && proj.techStack.length > 0 && (
+                            <div className="flex flex-wrap gap-1 font-mono text-[9px]">
+                              {proj.techStack.slice(0, 4).map((tech) => (
+                                <span key={tech} className="px-1.5 py-0.5 rounded bg-zinc-900/80 text-zinc-400 border border-zinc-850">
+                                  {tech}
+                                </span>
+                              ))}
+                              {proj.techStack.length > 4 && (
+                                <span className="text-zinc-600 text-[9px] self-center">+{proj.techStack.length - 4} more</span>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Card Action Controls */}
+                          <div className="flex items-center justify-between border-t border-zinc-900/80 pt-2 font-mono text-xs">
+                            <div className="flex items-center space-x-2">
+                              {proj.liveLink && (
+                                <a
+                                  href={proj.liveLink}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-zinc-500 hover:text-matrix text-[10px] flex items-center space-x-1"
+                                >
+                                  <span>Demo</span>
+                                  <ExternalLink className="w-3 h-3" />
+                                </a>
+                              )}
+                            </div>
+
+                            <div className="flex items-center space-x-2">
+                              <button
+                                onClick={() => handleEditProjectClick(proj)}
+                                className={`px-2.5 py-1 rounded border text-[10px] font-mono flex items-center space-x-1 transition-all ${
+                                  isEditingThis 
+                                    ? 'bg-cyber text-obsidian font-bold border-cyber' 
+                                    : 'bg-zinc-900 border-zinc-800 text-zinc-300 hover:text-cyber hover:border-cyber/40'
+                                }`}
+                              >
+                                <Edit2 className="w-3 h-3" />
+                                <span>{isEditingThis ? 'Editing' : 'Edit Node'}</span>
+                              </button>
+                              
+                              <button
+                                onClick={() => handleDeleteProject(proj.id)}
+                                className="p-1 rounded bg-rose-600/10 border border-rose-500/20 text-rose-400 hover:bg-rose-600 hover:text-white transition-all"
+                                title="Delete Project"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+
+            </div>
           </div>
         )}
 
