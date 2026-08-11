@@ -744,6 +744,17 @@ export default function AdminDashboard() {
                   )}
                 </div>
 
+                <a
+                  href="/PROJECT_SUBMISSION_GUIDE.md"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3 py-1.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-zinc-700 font-mono text-xs flex items-center justify-center space-x-1.5 transition-all shrink-0"
+                  title="View Developer Submission Guide (.md)"
+                >
+                  <FileCode className="w-3.5 h-3.5 text-matrix" />
+                  <span>Dev Guide (.md)</span>
+                </a>
+
                 <button
                   onClick={handleResetProjectForm}
                   className="px-3.5 py-1.5 rounded bg-cyber/10 border border-cyber text-cyber font-mono text-xs font-bold uppercase tracking-wider flex items-center justify-center space-x-1.5 hover:bg-cyber hover:text-obsidian transition-all duration-300 shadow-[0_0_12px_rgba(0,255,255,0.15)] active:scale-95 shrink-0"
