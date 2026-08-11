@@ -48,10 +48,10 @@ export default function ProjectDetailsModal({ project, onClose }) {
   const currentSlide = slides[currentIndex] || slides[0];
 
   return (
-    <div className="fixed inset-0 z-[100] bg-obsidian/95 backdrop-blur-xl overflow-y-auto font-sans text-zinc-300 transition-all duration-300 flex flex-col">
+    <div className="fixed inset-0 z-[9999] bg-obsidian overflow-y-auto font-sans text-zinc-300 transition-all duration-300 flex flex-col">
       
       {/* Top Header Bar */}
-      <header className="sticky top-0 z-50 bg-zinc-950/90 border-b border-zinc-800/80 px-4 sm:px-8 py-3 flex items-center justify-between shadow-2xl backdrop-blur-md">
+      <header className="sticky top-0 z-50 bg-zinc-950 border-b border-zinc-800 px-4 sm:px-8 py-3 flex items-center justify-between shadow-2xl">
         <div className="flex items-center space-x-3 font-mono text-xs">
           <span className="w-2.5 h-2.5 rounded-full bg-matrix animate-pulse shadow-[0_0_8px_#00ff66]" />
           <span className="text-white font-bold tracking-wider uppercase">
