@@ -284,6 +284,26 @@ export default function AdminDashboard() {
 
       await emailjs.send(serviceId, templateId, templateParams, publicKey);
       
+      // Save reply to Firestore under the message document
+      const messageDocRef = doc(db, 'messages', msg.id);
+      const newReply = {
+        text,
+        timestamp: new Date().toISOString()
+      };
+      const updatedReplies = msg.replies ? [...msg.replies, newReply] : [newReply];
+      await updateDoc(messageDocRef, {
+        replies: updatedReplies
+      });
+
+      // Update local state reactively
+      setMessagesList(prevList => 
+        prevList.map(item => 
+          item.id === msg.id 
+            ? { ...item, replies: updatedReplies } 
+            : item
+        )
+      );
+
       setReplyStatus(prev => ({ ...prev, [msg.id]: 'success' }));
       setReplyText(prev => ({ ...prev, [msg.id]: '' }));
       
@@ -708,6 +728,26 @@ export default function AdminDashboard() {
                           </span>
                         </div>
                         <p className="text-zinc-350 break-words pl-2 border-l border-zinc-800 whitespace-pre-wrap">{msg.message}</p>
+
+                        {/* Sent Replies History */}
+                        {msg.replies && msg.replies.length > 0 && (
+                          <div className="mt-4 space-y-2 border-t border-zinc-900/60 pt-3 pl-2 sm:pl-4">
+                            <span className="text-[9px] text-matrix uppercase tracking-wider font-semibold block select-none">
+                              // TRANSMITTED_REPLIES_HISTORY
+                            </span>
+                            <div className="space-y-2 max-h-[200px] overflow-y-auto pr-1">
+                              {msg.replies.map((rep, idx) => (
+                                <div key={idx} className="bg-zinc-950/20 p-2.5 rounded border border-zinc-900 flex flex-col space-y-1.5">
+                                  <div className="flex justify-between items-center text-[8px] text-zinc-500 font-mono select-none">
+                                    <span className="text-zinc-400 font-semibold">// REPLY_PAYLOAD_#{idx + 1}</span>
+                                    <span>{rep.timestamp ? new Date(rep.timestamp).toLocaleString() : 'Date unavailable'}</span>
+                                  </div>
+                                  <p className="text-zinc-300 font-sans text-xs break-words pl-2 border-l border-matrix/50 whitespace-pre-wrap">{rep.text}</p>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
 
                       <div className="shrink-0 flex items-center space-x-2">
