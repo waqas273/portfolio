@@ -36,12 +36,15 @@ export default function AdminDashboard() {
     id: '', // Empty means creating new project
     title: '',
     description: '',
+    longDescription: '',
+    features: '',
     techStack: '', // input as string, split to array
     liveLink: '',
     githubLink: '',
     image: '',
     category: 'Full-Stack',
-    fileName: 'App.jsx'
+    fileName: 'App.jsx',
+    gallery: [] // Array of { url: '', caption: '' }
   });
 
   // Messages inbox state
@@ -53,7 +56,7 @@ export default function AdminDashboard() {
   // Image Upload state
   const [uploadingImage, setUploadingImage] = useState(false);
 
-  // Handle direct file upload to Cloudinary
+  // Handle direct main cover upload to Cloudinary
   const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -89,6 +92,76 @@ export default function AdminDashboard() {
     } finally {
       setUploadingImage(false);
     }
+  };
+
+  // Handle uploading individual gallery screenshot to Cloudinary
+  const handleGalleryImageUpload = async (e, index) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'suzllkcp';
+    const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'portfolio';
+
+    if (!cloudName || !uploadPreset) {
+      alert("Cloudinary configuration is missing!");
+      return;
+    }
+
+    setUploadingImage(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', uploadPreset);
+
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (data.secure_url) {
+        setProjectForm(prev => {
+          const updated = [...(prev.gallery || [])];
+          if (!updated[index]) {
+            updated[index] = { url: data.secure_url, caption: '' };
+          } else {
+            updated[index] = { ...updated[index], url: data.secure_url };
+          }
+          return { ...prev, gallery: updated };
+        });
+      } else {
+        alert("Cloudinary Upload Failed: " + (data.error?.message || "Invalid upload parameters"));
+      }
+    } catch (err) {
+      console.error("Cloudinary screenshot upload error: ", err);
+      alert("Failed to upload screenshot to Cloudinary.");
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const handleAddGallerySlide = () => {
+    setProjectForm(prev => ({
+      ...prev,
+      gallery: [...(prev.gallery || []), { url: '', caption: '' }]
+    }));
+  };
+
+  const handleRemoveGallerySlide = (index) => {
+    setProjectForm(prev => ({
+      ...prev,
+      gallery: (prev.gallery || []).filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleUpdateGalleryItem = (index, field, value) => {
+    setProjectForm(prev => {
+      const updated = [...(prev.gallery || [])];
+      if (updated[index]) {
+        updated[index] = { ...updated[index], [field]: value };
+      }
+      return { ...prev, gallery: updated };
+    });
   };
 
   // Monitor Auth State
@@ -203,15 +276,24 @@ export default function AdminDashboard() {
     setActionLoading(true);
     setActionSuccess('');
     try {
+      const formattedFeatures = typeof projectForm.features === 'string'
+        ? projectForm.features.split('\n').map(s => s.trim()).filter(s => s !== '')
+        : (projectForm.features || []);
+
+      const validGallery = (projectForm.gallery || []).filter(item => item.url && item.url.trim() !== '');
+
       const payload = {
         title: projectForm.title.trim(),
         description: projectForm.description.trim(),
+        longDescription: projectForm.longDescription ? projectForm.longDescription.trim() : projectForm.description.trim(),
+        features: formattedFeatures,
         techStack: projectForm.techStack.split(',').map(s => s.trim()).filter(s => s !== ''),
         liveLink: projectForm.liveLink.trim(),
         githubLink: projectForm.githubLink.trim(),
-        image: projectForm.image.trim() || 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=600&auto=format&fit=crop',
+        image: projectForm.image.trim() || (validGallery[0]?.url || 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=600&auto=format&fit=crop'),
         category: projectForm.category,
-        fileName: projectForm.fileName.trim() || 'App.jsx'
+        fileName: projectForm.fileName.trim() || 'App.jsx',
+        gallery: validGallery
       };
 
       if (projectForm.id) {
@@ -230,12 +312,15 @@ export default function AdminDashboard() {
         id: '',
         title: '',
         description: '',
+        longDescription: '',
+        features: '',
         techStack: '',
         liveLink: '',
         githubLink: '',
         image: '',
         category: 'Full-Stack',
-        fileName: 'App.jsx'
+        fileName: 'App.jsx',
+        gallery: []
       });
 
       fetchProjects();
@@ -253,14 +338,17 @@ export default function AdminDashboard() {
   const handleEditProjectClick = (proj) => {
     setProjectForm({
       id: proj.id,
-      title: proj.title,
-      description: proj.description,
-      techStack: proj.techStack.join(', '),
-      liveLink: proj.liveLink,
-      githubLink: proj.githubLink,
-      image: proj.image,
-      category: proj.category,
-      fileName: proj.fileName || 'App.jsx'
+      title: proj.title || '',
+      description: proj.description || '',
+      longDescription: proj.longDescription || proj.description || '',
+      features: Array.isArray(proj.features) ? proj.features.join('\n') : (proj.features || ''),
+      techStack: Array.isArray(proj.techStack) ? proj.techStack.join(', ') : '',
+      liveLink: proj.liveLink || '',
+      githubLink: proj.githubLink || '',
+      image: proj.image || '',
+      category: proj.category || 'Full-Stack',
+      fileName: proj.fileName || 'App.jsx',
+      gallery: proj.gallery && Array.isArray(proj.gallery) ? proj.gallery : (proj.image ? [{ url: proj.image, caption: proj.description || '' }] : [])
     });
   };
 
@@ -606,13 +694,35 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-zinc-500">DESCRIPTION</label>
+                  <label className="text-zinc-500">SHORT_DESCRIPTION (Card summary)</label>
                   <textarea 
                     value={projectForm.description}
                     onChange={(e) => setProjectForm(p => ({ ...p, description: e.target.value }))}
-                    rows={3}
+                    rows={2}
                     className="w-full p-2 rounded bg-zinc-900/60 border border-zinc-800 outline-none text-white focus:border-cyber resize-none"
                     required
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-zinc-500">LONG_DESCRIPTION (Detailed Narrative for Specs Page)</label>
+                  <textarea 
+                    value={projectForm.longDescription}
+                    onChange={(e) => setProjectForm(p => ({ ...p, longDescription: e.target.value }))}
+                    rows={3}
+                    placeholder="Enter comprehensive narrative, database structure, and module overview..."
+                    className="w-full p-2 rounded bg-zinc-900/60 border border-zinc-800 outline-none text-white focus:border-cyber resize-none"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-zinc-500">CORE_CAPABILITIES (Key features list - One per line)</label>
+                  <textarea 
+                    value={projectForm.features}
+                    onChange={(e) => setProjectForm(p => ({ ...p, features: e.target.value }))}
+                    rows={3}
+                    placeholder="Real-time WebSockets telemetry&#10;OAuth 2.0 multi-tenant auth&#10;Automated Cloudinary media pipeline"
+                    className="w-full p-2 rounded bg-zinc-900/60 border border-zinc-800 outline-none text-white focus:border-cyber resize-none font-mono text-xs"
                   />
                 </div>
 
@@ -638,6 +748,86 @@ export default function AdminDashboard() {
                     <option value="Full-Stack">Full-Stack</option>
                     <option value="Frontend">Frontend</option>
                   </select>
+                </div>
+
+                {/* Multi-Screenshot Gallery & Page Explanations Section */}
+                <div className="space-y-3 col-span-1 md:col-span-2 border-t border-zinc-900 pt-4">
+                  <div className="flex items-center justify-between">
+                    <label className="text-matrix font-mono text-xs font-semibold flex items-center space-x-2">
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>// PAGE_SCREENSHOTS_GALLERY (Auto-Sliding Carousel + Page Explanations)</span>
+                    </label>
+                    <button
+                      type="button"
+                      onClick={handleAddGallerySlide}
+                      className="px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-matrix hover:border-matrix text-xs font-mono flex items-center space-x-1 transition-all"
+                    >
+                      <Plus className="w-3 h-3" />
+                      <span>Add Page Screenshot</span>
+                    </button>
+                  </div>
+
+                  {(!projectForm.gallery || projectForm.gallery.length === 0) ? (
+                    <div className="p-4 rounded border border-dashed border-zinc-900 bg-zinc-950/30 text-center text-xs font-mono text-zinc-600">
+                      No multi-page screenshots added yet. Click "+ Add Page Screenshot" to add slides with individual page descriptions.
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {projectForm.gallery.map((item, idx) => (
+                        <div key={idx} className="p-3 rounded border border-zinc-850 bg-zinc-950/60 grid grid-cols-1 sm:grid-cols-12 gap-3 items-start relative">
+                          <div className="sm:col-span-1 text-[10px] font-mono text-matrix font-bold pt-2">
+                            #{idx + 1}
+                          </div>
+
+                          {/* Screenshot Upload / URL */}
+                          <div className="sm:col-span-4 space-y-2">
+                            <label className="relative border border-dashed border-zinc-800 hover:border-cyber/50 rounded p-2 flex flex-col items-center justify-center cursor-pointer bg-zinc-950/40 text-xs font-mono text-zinc-400">
+                              <input 
+                                type="file" 
+                                accept="image/*" 
+                                onChange={(e) => handleGalleryImageUpload(e, idx)} 
+                                className="hidden" 
+                                disabled={uploadingImage}
+                              />
+                              <Upload className="w-3.5 h-3.5 text-cyber mb-1" />
+                              <span>Upload Screenshot</span>
+                            </label>
+                            <input 
+                              type="text"
+                              value={item.url || ''}
+                              onChange={(e) => handleUpdateGalleryItem(idx, 'url', e.target.value)}
+                              placeholder="Image URL (https://...)"
+                              className="w-full p-1.5 rounded bg-zinc-900/80 border border-zinc-800 text-xs font-mono text-white outline-none focus:border-cyber/40"
+                            />
+                          </div>
+
+                          {/* Page Explanation Input */}
+                          <div className="sm:col-span-6 space-y-1">
+                            <label className="text-[10px] text-zinc-500 font-mono">PAGE EXPLANATION / FEATURE DESCRIPTION</label>
+                            <textarea
+                              value={item.caption || ''}
+                              onChange={(e) => handleUpdateGalleryItem(idx, 'caption', e.target.value)}
+                              placeholder="Describe what is shown on this page/screenshot..."
+                              rows={3}
+                              className="w-full p-2 rounded bg-zinc-900/60 border border-zinc-850 text-xs font-sans text-white outline-none focus:border-cyber resize-none"
+                            />
+                          </div>
+
+                          {/* Remove Slide Button */}
+                          <div className="sm:col-span-1 flex justify-end pt-1">
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveGallerySlide(idx)}
+                              className="p-1 rounded bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-600 hover:text-white transition-all"
+                              title="Delete Slide"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-2 col-span-1 md:col-span-2">
