@@ -430,7 +430,7 @@ export default function AdminDashboard() {
     const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_uqsyfa5';
     const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'template_a7asz69';
     const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'W1IquHHwgOi2bFZ9V';
-    const avatarUrl = import.meta.env.VITE_EMAILJS_AVATAR_URL || 'https://plain-eeur-prod-public.komododecks.com/202606/10/WTCPLIgKHwJXvmDjczaz/image.jpg';
+    const avatarUrl = import.meta.env.VITE_EMAILJS_AVATAR_URL || 'https://res.cloudinary.com/suzllkcp/image/upload/v1786813178/tbljeoj4ygwwky4lin2z.jpg';
 
     if (!serviceId || serviceId === 'your_emailjs_service_id' || !publicKey) {
       alert("EmailJS is not fully configured. Please edit your VITE_EMAILJS_... environment variables.");
@@ -445,7 +445,7 @@ export default function AdminDashboard() {
         to_email: msg.email,
         reply_message: text,
         original_message: msg.message || '',
-        avatar_url: avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=250&auto=format&fit=crop',
+        avatar_url: avatarUrl || 'https://res.cloudinary.com/suzllkcp/image/upload/v1786813178/tbljeoj4ygwwky4lin2z.jpg',
         developer_name: profileData.name || 'Muhammad Waqas',
         developer_role: profileData.role || 'AI-Driven Full-Stack Engineer',
       };
