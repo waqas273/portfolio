@@ -10,7 +10,7 @@ import Education from './components/Education';
 import ContactTerminal from './components/ContactTerminal';
 import AdminDashboard from './components/AdminDashboard';
 import { Database, FolderClosed, Cpu, LayoutGrid, ArrowUp } from 'lucide-react';
-import dpImage from './assets/DP.jpg';
+import profileImage from './assets/profile.jpg';
 import { auth, db, storage } from './firebase'; // Ensures firebase initializes
 import { doc, getDoc } from 'firebase/firestore';
 
