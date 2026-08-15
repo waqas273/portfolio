@@ -103,11 +103,8 @@ export default function Navbar() {
             <ThemeToggle />
             <div className="h-6 w-[1px] bg-zinc-800" />
             <a
-              href="#cv"
-              onClick={(e) => {
-                e.preventDefault();
-                alert("CV Download action triggered! (Resume PDF link goes here)");
-              }}
+              href="/Muhammad_Waqas_CV.docx"
+              download="Muhammad_Waqas_CV.docx"
               className="relative inline-flex items-center space-x-2 px-4 py-1.5 rounded-md bg-matrix/10 border border-matrix text-matrix font-mono text-xs font-semibold tracking-wider uppercase hover:bg-matrix hover:text-obsidian transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_0_10px_rgba(0,255,102,0.15)] hover:shadow-[0_0_20px_rgba(0,255,102,0.4)] animate-[pulse_2.5s_infinite]"
             >
               <Download className="w-3.5 h-3.5" />
@@ -174,12 +171,9 @@ export default function Navbar() {
             {/* CV Download Action at bottom of Drawer */}
             <div className="pt-3 border-t border-zinc-900 flex justify-center mt-2">
               <a
-                href="#cv"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsDrawerOpen(false);
-                  alert("CV Download action triggered! (Resume PDF link goes here)");
-                }}
+                href="/Muhammad_Waqas_CV.docx"
+                download="Muhammad_Waqas_CV.docx"
+                onClick={() => setIsDrawerOpen(false)}
                 className="w-full text-center inline-flex items-center justify-center space-x-2 px-4 py-2.5 rounded-md bg-matrix/10 border border-matrix text-matrix font-mono text-xs font-semibold tracking-wider uppercase hover:bg-matrix hover:text-obsidian transition-all duration-300 shadow-[0_0_10px_rgba(0,255,102,0.15)] hover:shadow-[0_0_20px_rgba(0,255,102,0.4)]"
               >
                 <Download className="w-3.5 h-3.5" />
