@@ -210,37 +210,39 @@ export default function ProjectDetailsModal({ project, onClose }) {
 
             </div>
 
-            {/* Active Page Caption Banner */}
-            <div className="glass-hud rounded-xl border border-zinc-850 p-4 shadow-xl bg-zinc-950/70 flex items-center justify-between gap-3 font-mono text-xs">
-              <div className="flex items-center space-x-2 overflow-hidden">
-                <Layers className="w-4 h-4 text-matrix shrink-0" />
+            {/* Active Page Caption Banner - Full Display (No Truncation) */}
+            <div className="glass-hud rounded-xl border border-zinc-850 p-4 shadow-xl bg-zinc-950/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-mono text-xs">
+              <div className="flex items-start sm:items-center space-x-2 flex-1">
+                <Layers className="w-4 h-4 text-matrix shrink-0 mt-0.5 sm:mt-0" />
                 <span className="text-matrix font-bold uppercase shrink-0">// CAPTION:</span>
-                <span className="text-zinc-300 font-sans text-xs sm:text-sm truncate">
+                <span className="text-zinc-200 font-sans text-xs sm:text-sm whitespace-normal break-words leading-relaxed">
                   {currentSlide.caption || currentSlide.explanation || 'Main System Interface Overview'}
                 </span>
               </div>
-              <span className="text-zinc-500 text-[10px] shrink-0 font-mono">
-                {currentIndex + 1}/{slides.length}
+              <span className="text-zinc-500 text-[10px] shrink-0 font-mono self-end sm:self-auto">
+                SLIDE {currentIndex + 1} OF {slides.length}
               </span>
             </div>
           </div>
 
-          {/* RIGHT COLUMN: CORE CAPABILITIES (5 Cols) */}
+          {/* RIGHT COLUMN: CORE CAPABILITIES (5 Cols) - Internal Scrollable Container */}
           <div className="lg:col-span-5 h-full flex flex-col">
             <div className="glass-hud rounded-xl border border-zinc-800/90 p-6 shadow-xl bg-zinc-950/50 flex-1 flex flex-col justify-between hover:border-zinc-700 transition-all space-y-4">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between border-b border-zinc-900 pb-3">
+              <div className="space-y-3 flex-1 flex flex-col overflow-hidden">
+                <div className="flex items-center justify-between border-b border-zinc-900 pb-3 shrink-0">
                   <div className="flex items-center space-x-2 font-mono text-xs font-bold text-electric uppercase tracking-wider">
                     <Shield className="w-4 h-4 text-electric" />
                     <span>CORE_CAPABILITIES</span>
                   </div>
-                  <span className="w-2.5 h-2.5 rounded-full bg-electric animate-pulse" />
+                  <span className="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-matrix font-mono text-[10px]">
+                    {project.features?.length || 0} FEATURES
+                  </span>
                 </div>
 
                 {project.features && project.features.length > 0 ? (
-                  <ul className="space-y-3 font-sans text-xs sm:text-sm text-zinc-200">
+                  <ul className="space-y-2.5 font-sans text-xs sm:text-sm text-zinc-200 max-h-[380px] sm:max-h-[440px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent">
                     {project.features.map((feat, idx) => (
-                      <li key={idx} className="flex items-start space-x-3 p-2 rounded bg-zinc-900/40 border border-zinc-850/50">
+                      <li key={idx} className="flex items-start space-x-2.5 p-2.5 rounded bg-zinc-900/40 border border-zinc-850/60 hover:border-zinc-750 transition-colors">
                         <Check className="w-4 h-4 text-matrix shrink-0 mt-0.5" />
                         <span className="leading-relaxed">{feat}</span>
                       </li>
@@ -253,7 +255,7 @@ export default function ProjectDetailsModal({ project, onClose }) {
                 )}
               </div>
 
-              <div className="font-mono text-[10px] text-zinc-500 border-t border-zinc-900/80 pt-3 flex items-center justify-between">
+              <div className="font-mono text-[10px] text-zinc-500 border-t border-zinc-900/80 pt-3 flex items-center justify-between shrink-0">
                 <span>MODULE SPECIFICATIONS</span>
                 <span className="text-matrix font-bold">✓ VERIFIED</span>
               </div>
