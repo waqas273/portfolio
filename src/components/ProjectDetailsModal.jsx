@@ -271,7 +271,7 @@ export default function ProjectDetailsModal({ project, onClose }) {
             <span className="font-bold uppercase tracking-wider">// ARCHITECTURE OVERVIEW & TECH STACK</span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
             
             {/* EXECUTIVE SUMMARY CARD */}
             <div className="glass-hud rounded-xl border border-zinc-800/90 p-6 space-y-4 shadow-xl bg-zinc-950/50 flex flex-col justify-between hover:border-zinc-700 transition-all">
@@ -283,9 +283,11 @@ export default function ProjectDetailsModal({ project, onClose }) {
                   </div>
                   <span className="w-2 h-2 rounded-full bg-cyber" />
                 </div>
-                <p className="text-zinc-300 font-sans text-sm sm:text-base leading-relaxed">
-                  {project.longDescription || project.description}
-                </p>
+                <div className="max-h-[240px] sm:max-h-[280px] overflow-y-auto pr-1.5 scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent">
+                  <p className="text-zinc-300 font-sans text-sm sm:text-base leading-relaxed">
+                    {project.longDescription || project.description}
+                  </p>
+                </div>
               </div>
               <div className="font-mono text-[10px] text-zinc-600 border-t border-zinc-900/80 pt-3">
                 STATUS: DEPLOYED & VERIFIED
@@ -303,16 +305,18 @@ export default function ProjectDetailsModal({ project, onClose }) {
                   <span className="w-2 h-2 rounded-full bg-matrix" />
                 </div>
 
-                <div className="flex flex-wrap gap-2 pt-1 font-mono text-xs">
-                  {project.techStack?.map((tech) => (
-                    <span 
-                      key={tech} 
-                      className="px-3 py-1.5 rounded-md bg-zinc-900/90 border border-zinc-800 text-zinc-200 font-semibold flex items-center space-x-1.5 shadow-sm hover:border-matrix/50 transition-colors"
-                    >
-                      <Code className="w-3.5 h-3.5 text-matrix" />
-                      <span>{tech}</span>
-                    </span>
-                  ))}
+                <div className="max-h-[240px] sm:max-h-[280px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent">
+                  <div className="flex flex-wrap gap-2 pt-1 font-mono text-xs">
+                    {project.techStack?.map((tech) => (
+                      <span 
+                        key={tech} 
+                        className="px-3 py-1.5 rounded-md bg-zinc-900/90 border border-zinc-800 text-zinc-200 font-semibold flex items-center space-x-1.5 shadow-sm hover:border-matrix/50 transition-colors"
+                      >
+                        <Code className="w-3.5 h-3.5 text-matrix" />
+                        <span>{tech}</span>
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
               <div className="font-mono text-[10px] text-zinc-600 border-t border-zinc-900/80 pt-3">
