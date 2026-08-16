@@ -103,7 +103,24 @@ export default function AdminDashboard() {
   const [dispatchStatus, setDispatchStatus] = useState('IDLE'); // 'IDLE' | 'SENDING' | 'PAUSED' | 'COMPLETED' | 'CANCELLED'
   const [sendDelaySeconds, setSendDelaySeconds] = useState(1.5);
   const [currentDispatchIndex, setCurrentDispatchIndex] = useState(0);
-  const [dispatchLogs, setDispatchLogs] = useState([]);
+  const [dispatchLogs, setDispatchLogs] = useState(() => {
+    try {
+      const saved = localStorage.getItem('outreach_dispatch_logs');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+
+  // Sync dispatchLogs to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('outreach_dispatch_logs', JSON.stringify(dispatchLogs));
+    } catch (e) {
+      console.error("Failed to persist dispatch logs to localStorage", e);
+    }
+  }, [dispatchLogs]);
+
   const dispatchControlRef = useRef({ isPaused: false, isCancelled: false });
 
   // Pitch Template Presets
@@ -259,6 +276,10 @@ export default function AdminDashboard() {
         developer_role: profileData.role || 'AI-Driven Full-Stack Engineer',
       };
 
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+      const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
       try {
         await emailjs.send(serviceId, outreachTemplateId.trim(), templateParams, publicKey);
         
@@ -271,7 +292,9 @@ export default function AdminDashboard() {
             name: rec.name,
             company: rec.company,
             status: 'SUCCESS',
-            timestamp: new Date().toLocaleTimeString(),
+            date: dateStr,
+            time: timeStr,
+            subject: outreachSubject,
             details: 'Delivered successfully via EmailJS'
           },
           ...prev
@@ -287,7 +310,9 @@ export default function AdminDashboard() {
             name: rec.name,
             company: rec.company,
             status: 'FAILED',
-            timestamp: new Date().toLocaleTimeString(),
+            date: dateStr,
+            time: timeStr,
+            subject: outreachSubject,
             details: errMsg
           },
           ...prev
@@ -324,6 +349,38 @@ export default function AdminDashboard() {
     setDispatchStatus('IDLE');
     setCurrentDispatchIndex(0);
     setRecipientsList(prev => prev.map(item => ({ ...item, status: 'PENDING', error: null })));
+  };
+
+  const handleClearDispatchLogs = () => {
+    if (window.confirm("Are you sure you want to clear all persistent dispatch logs?")) {
+      setDispatchLogs([]);
+      localStorage.removeItem('outreach_dispatch_logs');
+    }
+  };
+
+  const handleExportDispatchLogs = () => {
+    if (dispatchLogs.length === 0) return;
+    const headers = ['Date', 'Time', 'Recipient Email', 'Name', 'Company', 'Status', 'Subject', 'Details'];
+    const rows = dispatchLogs.map(l => [
+      `"${l.date || ''}"`,
+      `"${l.time || ''}"`,
+      `"${l.email || ''}"`,
+      `"${l.name || ''}"`,
+      `"${l.company || ''}"`,
+      `"${l.status || ''}"`,
+      `"${(l.subject || '').replace(/"/g, '""')}"`,
+      `"${(l.details || '').replace(/"/g, '""')}"`
+    ]);
+
+    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `outreach_dispatch_history_${Date.now()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   // Image Upload state
@@ -2055,14 +2112,35 @@ export default function AdminDashboard() {
 
             </div>
 
-            {/* LIVE DELIVERY TELEMETRY LOGS TABLE */}
+            {/* LIVE DELIVERY TELEMETRY LOGS TABLE (PERMANENTLY PERSISTED) */}
             <div className="glass-hud rounded-lg border border-zinc-800 p-6 space-y-4 bg-zinc-950/50">
-              <div className="flex items-center justify-between border-b border-zinc-900 pb-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-zinc-900 pb-3 gap-3">
                 <div className="flex items-center space-x-2 font-mono text-xs font-bold text-matrix uppercase">
                   <Layers className="w-4 h-4" />
-                  <span>LIVE_DISPATCH_TELEMETRY_LOGS ({dispatchLogs.length})</span>
+                  <span>PERSISTENT_DISPATCH_HISTORY_LOGS ({dispatchLogs.length})</span>
+                  <span className="w-2 h-2 rounded-full bg-matrix animate-pulse ml-1" />
                 </div>
-                <span className="w-2 h-2 rounded-full bg-matrix animate-pulse" />
+
+                <div className="flex items-center space-x-2 font-mono text-xs">
+                  {dispatchLogs.length > 0 && (
+                    <>
+                      <button
+                        onClick={handleExportDispatchLogs}
+                        className="px-3 py-1 rounded bg-zinc-900 border border-zinc-800 text-cyber hover:border-cyber transition-all font-semibold flex items-center space-x-1.5 text-[10px]"
+                      >
+                        <Upload className="w-3 h-3 rotate-180" />
+                        <span>Export CSV</span>
+                      </button>
+                      <button
+                        onClick={handleClearDispatchLogs}
+                        className="px-3 py-1 rounded bg-rose-500/10 border border-rose-500/30 text-rose-400 hover:bg-rose-500 hover:text-white transition-all font-semibold flex items-center space-x-1 text-[10px]"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                        <span>Clear History</span>
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
 
               {dispatchLogs.length === 0 ? (
@@ -2074,29 +2152,34 @@ export default function AdminDashboard() {
                   <table className="w-full font-mono text-xs text-left">
                     <thead>
                       <tr className="border-b border-zinc-850 text-[10px] text-zinc-500 uppercase">
-                        <th className="py-2.5 px-3">TIMESTAMP</th>
+                        <th className="py-2.5 px-3">DATE & DAY</th>
+                        <th className="py-2.5 px-3">TIME</th>
                         <th className="py-2.5 px-3">RECIPIENT EMAIL</th>
                         <th className="py-2.5 px-3">NAME</th>
                         <th className="py-2.5 px-3">COMPANY</th>
                         <th className="py-2.5 px-3">STATUS</th>
-                        <th className="py-2.5 px-3">DETAILS</th>
+                        <th className="py-2.5 px-3">SUBJECT & DETAILS</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-zinc-900/60">
                       {dispatchLogs.map((log) => (
                         <tr key={log.id} className="hover:bg-zinc-900/30 transition-colors">
-                          <td className="py-2.5 px-3 text-zinc-500 text-[10px] whitespace-nowrap">{log.timestamp}</td>
+                          <td className="py-2.5 px-3 text-zinc-400 text-[10px] whitespace-nowrap">{log.date || 'N/A'}</td>
+                          <td className="py-2.5 px-3 text-zinc-500 text-[10px] whitespace-nowrap">{log.time || log.timestamp || 'N/A'}</td>
                           <td className="py-2.5 px-3 text-white font-semibold">{log.email}</td>
                           <td className="py-2.5 px-3 text-zinc-300">{log.name}</td>
                           <td className="py-2.5 px-3 text-zinc-400">{log.company}</td>
                           <td className="py-2.5 px-3">
                             <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${
-                              log.status === 'SUCCESS' ? 'bg-matrix/15 text-matrix border border-matrix/30' : 'bg-rose-500/15 text-rose-400 border border-rose-500/30'
+                              log.status === 'SUCCESS' ? 'bg-matrix/15 text-matrix border border-matrix/30 shadow-[0_0_8px_rgba(0,255,102,0.2)]' : 'bg-rose-500/15 text-rose-400 border border-rose-500/30'
                             }`}>
                               {log.status}
                             </span>
                           </td>
-                          <td className="py-2.5 px-3 text-zinc-400 text-[11px] font-sans">{log.details}</td>
+                          <td className="py-2.5 px-3 text-zinc-400 text-[11px] font-sans">
+                            {log.subject && <div className="text-[10px] font-mono text-zinc-500 mb-0.5">// {log.subject}</div>}
+                            <span className={log.status === 'SUCCESS' ? 'text-zinc-300' : 'text-rose-400 font-mono text-[10px]'}>{log.details}</span>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
