@@ -102,24 +102,40 @@ export default function AdminDashboard() {
   const [csvRawInput, setCsvRawInput] = useState('');
   const [dispatchStatus, setDispatchStatus] = useState('IDLE'); // 'IDLE' | 'SENDING' | 'PAUSED' | 'COMPLETED' | 'CANCELLED'
   const [sendDelaySeconds, setSendDelaySeconds] = useState(1.5);
-  const [currentDispatchIndex, setCurrentDispatchIndex] = useState(0);
-  const [dispatchLogs, setDispatchLogs] = useState([]);
+  const [dispatchLogs, setDispatchLogs] = useState(() => {
+    try {
+      const saved = localStorage.getItem('outreach_dispatch_logs');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+
   const dispatchControlRef = useRef({ isPaused: false, isCancelled: false });
 
-  // Real-time Firestore Synchronization for Outreach Logs
+  // Real-time Firestore Synchronization for Outreach Logs (with LocalStorage Fallback)
   useEffect(() => {
     if (!user) return;
     const logsRef = collection(db, 'outreach_logs');
     const q = query(logsRef, orderBy('createdAt', 'desc'));
+    
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const loadedLogs = snapshot.docs.map(docSnap => ({
         id: docSnap.id,
         ...docSnap.data()
       }));
       setDispatchLogs(loadedLogs);
+      try {
+        localStorage.setItem('outreach_dispatch_logs', JSON.stringify(loadedLogs));
+      } catch (e) {}
     }, (error) => {
-      console.error("Firestore outreach_logs error:", error);
+      console.warn("Firestore outreach_logs permission restricted, falling back to LocalStorage:", error.message);
+      try {
+        const saved = localStorage.getItem('outreach_dispatch_logs');
+        if (saved) setDispatchLogs(JSON.parse(saved));
+      } catch (e) {}
     });
+
     return () => unsubscribe();
   }, [user]);
 
@@ -286,6 +302,7 @@ export default function AdminDashboard() {
         setRecipientsList(prev => prev.map((item, idx) => idx === i ? { ...item, status: 'SUCCESS' } : item));
         
         const successLog = {
+          id: `${rec.id}-${Date.now()}`,
           email: rec.email,
           name: rec.name,
           company: rec.company,
@@ -297,10 +314,16 @@ export default function AdminDashboard() {
           createdAt: Date.now()
         };
 
+        setDispatchLogs(prev => {
+          const updated = [successLog, ...prev];
+          try { localStorage.setItem('outreach_dispatch_logs', JSON.stringify(updated)); } catch (e) {}
+          return updated;
+        });
+
         try {
           await addDoc(collection(db, 'outreach_logs'), successLog);
         } catch (e) {
-          console.error("Firestore log save error:", e);
+          console.warn("Firestore log save fallback to LocalStorage:", e.message);
         }
       } catch (err) {
         console.error(`Bulk send error for ${rec.email}:`, err);
@@ -308,6 +331,7 @@ export default function AdminDashboard() {
         setRecipientsList(prev => prev.map((item, idx) => idx === i ? { ...item, status: 'FAILED', error: errMsg } : item));
         
         const failedLog = {
+          id: `${rec.id}-${Date.now()}`,
           email: rec.email,
           name: rec.name,
           company: rec.company,
@@ -319,10 +343,16 @@ export default function AdminDashboard() {
           createdAt: Date.now()
         };
 
+        setDispatchLogs(prev => {
+          const updated = [failedLog, ...prev];
+          try { localStorage.setItem('outreach_dispatch_logs', JSON.stringify(updated)); } catch (e) {}
+          return updated;
+        });
+
         try {
           await addDoc(collection(db, 'outreach_logs'), failedLog);
         } catch (e) {
-          console.error("Firestore log save error:", e);
+          console.warn("Firestore log save fallback to LocalStorage:", e.message);
         }
       }
 
@@ -359,15 +389,15 @@ export default function AdminDashboard() {
   };
 
   const handleClearDispatchLogs = async () => {
-    if (window.confirm("Are you sure you want to clear all persistent dispatch logs from Firestore?")) {
+    if (window.confirm("Are you sure you want to clear all persistent dispatch logs?")) {
+      setDispatchLogs([]);
+      try { localStorage.removeItem('outreach_dispatch_logs'); } catch (e) {}
       try {
         const snapshot = await getDocs(collection(db, 'outreach_logs'));
         const deletePromises = snapshot.docs.map(docSnap => deleteDoc(doc(db, 'outreach_logs', docSnap.id)));
         await Promise.all(deletePromises);
-        setDispatchLogs([]);
       } catch (e) {
-        console.error("Failed to clear outreach logs from Firestore", e);
-        alert("Error clearing logs from Firestore: " + (e.message || e));
+        console.warn("Firestore clear logs error:", e.message);
       }
     }
   };
