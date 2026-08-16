@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proposal - Rai Education System Custom Web Portal & LMS</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap');
+
+    @page {
+      size: A4;
+      margin: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: #090a0f;
+      color: #e2e8f0;
+      line-height: 1.5;
+    }
+
+    .page-container {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto;
+      background-color: #0d0f17;
+      border: 1px solid #1e2333;
+      padding: 40px 45px;
+      position: relative;
+    }
+
+    /* Executive Top Banner Bar */
+    .top-accent {
+      height: 6px;
+      background: linear-gradient(90deg, #00ff66 0%, #00e5ff 50%, #3b82f6 100%);
+      margin: -40px -45px 35px -45px;
+    }
+
+    /* Header Identity */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1px solid #1e2333;
+      padding-bottom: 24px;
+      margin-bottom: 30px;
+    }
+
+    .brand-title {
+      font-size: 22px;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: -0.5px;
+      text-transform: uppercase;
+    }
+
+    .brand-subtitle {
+      font-size: 13px;
+      font-weight: 700;
+      color: #00ff66;
+      font-family: 'JetBrains Mono', monospace;
+      margin-top: 4px;
+    }
+
+    .meta-badge {
+      text-align: right;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    .badge-pill {
+      display: inline-block;
+      padding: 4px 10px;
+      background-color: rgba(0, 229, 255, 0.1);
+      border: 1px solid rgba(0, 229, 255, 0.3);
+      color: #00e5ff;
+      border-radius: 4px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    /* Client Details Card */
+    .client-card {
+      background-color: #121522;
+      border: 1px solid #1e2333;
+      border-left: 4px solid #00ff66;
+      border-radius: 8px;
+      padding: 18px 22px;
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .client-info h3 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .client-info p {
+      margin: 4px 0 0 0;
+      font-size: 12px;
+      color: #94a3b8;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .client-url {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #38bdf8;
+      background-color: rgba(56, 189, 248, 0.1);
+      padding: 4px 10px;
+      border-radius: 4px;
+      text-decoration: none;
+    }
+
+    /* Section Headers */
+    .section-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: #00ff66;
+      font-family: 'JetBrains Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 25px;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background-color: #1e2333;
+    }
+
+    /* Feature Grid */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 25px;
+    }
+
+    .feature-box {
+      background-color: #121522;
+      border: 1px solid #1e2333;
+      border-radius: 8px;
+      padding: 16px 18px;
+    }
+
+    .feature-box h4 {
+      margin: 0 0 8px 0;
+      font-size: 13px;
+      font-weight: 800;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .feature-box p {
+      margin: 0;
+      font-size: 11.5px;
+      color: #cbd5e1;
+      line-height: 1.6;
+    }
+
+    .feature-box ul {
+      margin: 6px 0 0 0;
+      padding-left: 16px;
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    .feature-box li {
+      margin-bottom: 3px;
+    }
+
+    /* Highlight College LMS Box */
+    .lms-box {
+      background: linear-gradient(135deg, rgba(0, 229, 255, 0.08) 0%, rgba(0, 255, 102, 0.05) 100%);
+      border: 1px solid rgba(0, 229, 255, 0.3);
+      border-radius: 8px;
+      padding: 20px 22px;
+      margin-bottom: 30px;
+    }
+
+    .lms-box h4 {
+      margin: 0 0 6px 0;
+      font-size: 14px;
+      font-weight: 800;
+      color: #00e5ff;
+    }
+
+    .lms-box p {
+      margin: 0;
+      font-size: 12px;
+      color: #cbd5e1;
+      line-height: 1.6;
+    }
+
+    /* Stack Comparison Table */
+    .table-container {
+      margin-bottom: 30px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px;
+    }
+
+    th, td {
+      padding: 10px 14px;
+      text-align: left;
+      border-bottom: 1px solid #1e2333;
+    }
+
+    th {
+      background-color: #121522;
+      color: #94a3b8;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+    }
+
+    td {
+      background-color: #0d0f17;
+      color: #e2e8f0;
+    }
+
+    .check-yes {
+      color: #00ff66;
+      font-weight: bold;
+    }
+
+    /* CTA Portfolio Footer Card */
+    .cta-card {
+      background: linear-gradient(135deg, #121522 0%, #171b2e 100%);
+      border: 1px solid #272d42;
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      margin-top: 35px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .cta-card h3 {
+      margin: 0 0 6px 0;
+      font-size: 16px;
+      font-weight: 900;
+      color: #ffffff;
+    }
+
+    .cta-card p {
+      margin: 0 0 18px 0;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .btn-portfolio {
+      display: inline-block;
+      padding: 14px 32px;
+      background: linear-gradient(90deg, #00ff66 0%, #00e5ff 100%);
+      color: #07080c !important;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-decoration: none !important;
+      border-radius: 8px;
+      box-shadow: 0 0 25px rgba(0, 255, 102, 0.4);
+    }
+
+    .contact-footer {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 16px;
+    }
+
+    .contact-footer a {
+      color: #38bdf8;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page-container">
+    
+    <!-- Top Accent Bar -->
+    <div class="top-accent"></div>
+
+    <!-- Header -->
+    <div class="header">
+      <div>
+        <div class="brand-title">Software Engineering Proposal</div>
+        <div class="brand-subtitle">// Custom School & College Management Portal + LMS</div>
+      </div>
+      <div class="meta-badge">
+        <div class="badge-pill">B2B ENTERPRISE SOLUTION</div>
+        <div>Date: August 2026</div>
+        <div>Prepared by: Muhammad Waqas</div>
+      </div>
+    </div>
+
+    <!-- Target Client Info Card -->
+    <div class="client-card">
+      <div class="client-info">
+        <h3>Prepared Exclusively for: Rai Education System</h3>
+        <p>Target Institution: Primary, Secondary School & Future College Campus Expansion</p>
+      </div>
+      <a href="https://sites.google.com/view/raieducationsystem" target="_blank" class="client-url">
+        Current Site: Google Sites &rarr;
+      </a>
+    </div>
+
+    <!-- Executive Summary -->
+    <div style="font-size: 12.5px; color: #cbd5e1; line-height: 1.7; margin-bottom: 25px;">
+      <strong style="color: #ffffff;">Executive Objective:</strong> To modernize Rai Education System's web presence from a static Google Site into a high-speed, secure, multi-stakeholder custom Web Application. This platform will digitize student admissions, fee tracking, daily attendance, staff jobs, parent communication, and provide a university-grade LMS as Rai Education System expands into College level.
+    </div>
+
+    <!-- Core Functional Modules -->
+    <div class="section-title">01. CORE ADMINISTRATIVE & ACADEMIC MODULES</div>
+
+    <div class="grid-2">
+      
+      <!-- Module 1 -->
+      <div class="feature-box">
+        <h4>💳 Automated Fee & Financial Engine</h4>
+        <p>Complete real-time fee tracking system for Accountants and Admins.</p>
+        <ul>
+          <li>Real-time Paid vs Pending fee status tracking</li>
+          <li>Automated digital fee voucher & slip generation</li>
+          <li>Bank receipt / Cash payment admin approval workflow</li>
+        </ul>
+      </div>
+
+      <!-- Module 2 -->
+      <div class="feature-box">
+        <h4>👥 Student & Parent Individual Portals</h4>
+        <p>Dedicated login credentials for every student & parent account.</p>
+        <ul>
+          <li>Student dashboard: Homework, exam results & schedules</li>
+          <li>Parent dashboard: Live attendance & fee clearance tracking</li>
+          <li>Real-time push notifications & school notices</li>
+        </ul>
+      </div>
+
+      <!-- Module 3 -->
+      <div class="feature-box">
+        <h4>📝 Digital Admissions & Class Manager</h4>
+        <p>Streamlined student enrollment from Class 1 through Class 10.</p>
+        <ul>
+          <li>Online admission application forms with document upload</li>
+          <li>Automated Roll Number & Section generation</li>
+          <li>Class-by-class student directory and teacher assignments</li>
+        </ul>
+      </div>
+
+      <!-- Module 4 -->
+      <div class="feature-box">
+        <h4>🔒 Role-Based Access Control (RBAC)</h4>
+        <p>Custom security permissions for all institutional stakeholders.</p>
+        <ul>
+          <li>Portals for Super Admin, Principal, Accountant, Teachers & Parents</li>
+          <li>Staff Management & Staff Attendance tracking</li>
+          <li>Career & Job Openings portal for teacher recruitment</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Future-Ready College LMS -->
+    <div class="section-title">02. COLLEGE EXPANSION & ENTERPRISE LMS</div>
+
+    <div class="lms-box">
+      <h4>🎓 Future-Ready Learning Management System (LMS)</h4>
+      <p>
+        As Rai Education System scales from Classes 1-10 into College and Higher Education, the portal seamlessly activates a university-grade LMS. Includes online lecture uploads, assignment submissions, digital quizzes, auto-graded exams, and multi-department stakeholder portals.
+      </p>
+    </div>
+
+    <!-- Feature Comparison Table -->
+    <div class="section-title">03. CURRENT GOOGLE SITE VS CUSTOM SYSTEM</div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Feature Module</th>
+            <th>Current Site (Google Sites)</th>
+            <th>Proposed Custom Web Portal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Student & Parent Login Accounts</strong></td>
+            <td style="color: #ef4444;">Not Supported</td>
+            <td class="check-yes">&#10004; Dedicated Individual Accounts</td>
+          </tr>
+          <tr>
+            <td><strong>Fee Paid / Pending Tracker & Vouchers</strong></td>
+            <td style="color: #ef4444;">Manual Paper Work</td>
+            <td class="check-yes">&#10004; Automated Digital Receipts & Status</td>
+          </tr>
+          <tr>
+            <td><strong>Online Admissions & Document Upload</strong></td>
+            <td style="color: #ef4444;">Manual Forms</td>
+            <td class="check-yes">&#10004; 100% Paperless Digital Enrollment</td>
+          </tr>
+          <tr>
+            <td><strong>Staff Job Openings & Applications</strong></td>
+            <td style="color: #ef4444;">Not Available</td>
+            <td class="check-yes">&#10004; Built-in Career Portal</td>
+          </tr>
+          <tr>
+            <td><strong>College Level LMS & Lectures</strong></td>
+            <td style="color: #ef4444;">Not Supported</td>
+            <td class="check-yes">&#10004; University-Grade LMS Ready</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Call-to-Action Portfolio Section -->
+    <div class="cta-card">
+      <h3>Ready to Modernize Rai Education System?</h3>
+      <p>Inspect my verified full-stack software development portfolio, live client projects, and interactive demos:</p>
+      
+      <a href="https://iwaqass.xyz/" target="_blank" class="btn-portfolio">
+        INSPECT LIVE DEVELOPER PORTFOLIO &rarr;
+      </a>
+
+      <div class="contact-footer">
+        <div>Developer: <strong>Muhammad Waqas</strong></div>
+        <div>Portfolio: <a href="https://iwaqass.xyz/" target="_blank">https://iwaqass.xyz/</a></div>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
