@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { auth, db } from '../firebase';
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc, setDoc, collection, getDocs, deleteDoc, addDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, collection, getDocs, deleteDoc, addDoc, updateDoc, query, orderBy, onSnapshot } from 'firebase/firestore';
 import { Terminal, Shield, LogOut, Save, Plus, Trash2, Edit2, Mail, Briefcase, FileCode, Cpu, Loader2, Upload, Image, X, Search, Filter, Sparkles, Layers, ExternalLink, FolderPlus, Check, LayoutGrid, List, Eye, Link, Send, Play, Pause, Square, CheckCircle2, AlertTriangle, FileSpreadsheet, Users, MailCheck, RefreshCw, Copy } from 'lucide-react';
 import emailjs from '@emailjs/browser';
 import ThemeToggle from './ThemeToggle';
@@ -94,54 +94,54 @@ export default function AdminDashboard() {
   // Bulk Outreach Email Dispatcher States
   const [outreachServiceId, setOutreachServiceId] = useState(import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_uqsyfa5');
   const [outreachTemplateId, setOutreachTemplateId] = useState(import.meta.env.VITE_EMAILJS_OUTREACH_TEMPLATE_ID || 'template_070616h');
-  const [outreachSubject, setOutreachSubject] = useState('Full-Stack Web Development & AI Workflow Integration Services');
+  const [outreachSubject, setOutreachSubject] = useState("Scaling {company}'s Web Platform & Automated AI Workflows");
   const [outreachMessage, setOutreachMessage] = useState(
-    `Hi {name},\n\nI noticed {company} is scaling and wanted to reach out regarding your web application & digital infrastructure.\n\nI am Muhammad Waqas, a Full-Stack & AI Engineer. I specialize in building high-performance web applications (React 19, Next.js, Node.js, MERN stack) and integrating custom AI Vector RAG pipelines to automate business workflows.\n\nHere is a quick overview of what I can build for {company}:\n- Modern, ultra-fast web applications & responsive dashboards\n- Real-time cloud databases (Firebase / MongoDB)\n- AI-driven automated chat, document RAG, and custom microservices\n\nYou can inspect my live developer portfolio here: https://iwaqass.xyz/\n\nWould you be open to a brief chat this week to discuss how we can scale your application?\n\nBest regards,\nMuhammad Waqas\nFull-Stack & AI Engineer\nPortfolio: https://iwaqass.xyz/`
+    `Hi {name},\n\nI've been following {company}'s growth and wanted to reach out directly regarding your digital infrastructure and web application needs.\n\nI am Muhammad Waqas, a Full-Stack & AI Engineer. I specialize in building high-performance web platforms (React 19, Next.js, Node.js) and integrating custom AI Vector RAG workflows to help companies scale faster and automate operations.\n\nHere is how I can support {company}:\n- Web Application Engineering: Custom React / Next.js platforms with modern glassmorphism UI & lightning-fast load times.\n- AI & Automation Pipelines: Custom document search, AI customer support bots, and automated lead qualification.\n- Cloud & Real-Time Databases: High-scale Firebase and MongoDB cloud architectures.\n\nYou can inspect my live developer portfolio and verified client projects here: https://iwaqass.xyz/\n\nWould you be open to a brief 10-minute call this week to discuss how we can accelerate {company}'s tech goals?\n\nBest regards,\nMuhammad Waqas\nFull-Stack & AI Engineer\nPortfolio: https://iwaqass.xyz/\nGitHub: https://github.com/waqas273`
   );
   const [recipientsList, setRecipientsList] = useState([]);
   const [csvRawInput, setCsvRawInput] = useState('');
   const [dispatchStatus, setDispatchStatus] = useState('IDLE'); // 'IDLE' | 'SENDING' | 'PAUSED' | 'COMPLETED' | 'CANCELLED'
   const [sendDelaySeconds, setSendDelaySeconds] = useState(1.5);
   const [currentDispatchIndex, setCurrentDispatchIndex] = useState(0);
-  const [dispatchLogs, setDispatchLogs] = useState(() => {
-    try {
-      const saved = localStorage.getItem('outreach_dispatch_logs');
-      return saved ? JSON.parse(saved) : [];
-    } catch (e) {
-      return [];
-    }
-  });
-
-  // Sync dispatchLogs to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem('outreach_dispatch_logs', JSON.stringify(dispatchLogs));
-    } catch (e) {
-      console.error("Failed to persist dispatch logs to localStorage", e);
-    }
-  }, [dispatchLogs]);
-
+  const [dispatchLogs, setDispatchLogs] = useState([]);
   const dispatchControlRef = useRef({ isPaused: false, isCancelled: false });
 
-  // Pitch Template Presets
+  // Real-time Firestore Synchronization for Outreach Logs
+  useEffect(() => {
+    if (!user) return;
+    const logsRef = collection(db, 'outreach_logs');
+    const q = query(logsRef, orderBy('createdAt', 'desc'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const loadedLogs = snapshot.docs.map(docSnap => ({
+        id: docSnap.id,
+        ...docSnap.data()
+      }));
+      setDispatchLogs(loadedLogs);
+    }, (error) => {
+      console.error("Firestore outreach_logs error:", error);
+    });
+    return () => unsubscribe();
+  }, [user]);
+
+  // High-Converting B2B Service Pitch Presets
   const pitchPresets = [
     {
-      id: 'fullstack',
-      label: '🚀 Full-Stack Web Development & AI Integration',
-      subject: 'Full-Stack Web Development & AI Workflow Integration Services',
-      body: `Hi {name},\n\nI noticed {company} is scaling and wanted to reach out regarding your web application & digital infrastructure.\n\nI am Muhammad Waqas, a Full-Stack & AI Engineer. I specialize in building high-performance web applications (React 19, Next.js, Node.js, MERN stack) and integrating custom AI Vector RAG pipelines to automate business workflows.\n\nHere is a quick overview of what I can build for {company}:\n- Modern, ultra-fast web applications & responsive dashboards\n- Real-time cloud databases (Firebase / MongoDB)\n- AI-driven automated chat, document RAG, and custom microservices\n\nYou can inspect my live developer portfolio here: https://iwaqass.xyz/\n\nWould you be open to a brief chat this week to discuss how we can scale your application?\n\nBest regards,\nMuhammad Waqas\nFull-Stack & AI Engineer\nPortfolio: https://iwaqass.xyz/`
+      id: 'fullstack_b2b',
+      label: '🚀 B2B Software Engineering & AI Integration',
+      subject: "Scaling {company}'s Web Platform & Automated AI Workflows",
+      body: `Hi {name},\n\nI've been following {company}'s growth and wanted to reach out directly regarding your digital infrastructure and web application needs.\n\nI am Muhammad Waqas, a Full-Stack & AI Engineer. I specialize in building high-performance web platforms (React 19, Next.js, Node.js) and integrating custom AI Vector RAG workflows to help companies scale faster and automate operations.\n\nHere is how I can support {company}:\n- Web Application Engineering: Custom React / Next.js platforms with modern glassmorphism UI & lightning-fast load times.\n- AI & Automation Pipelines: Custom document search, AI customer support bots, and automated lead qualification.\n- Cloud & Real-Time Databases: High-scale Firebase and MongoDB cloud architectures.\n\nYou can inspect my live developer portfolio and verified client projects here: https://iwaqass.xyz/\n\nWould you be open to a brief 10-minute call this week to discuss how we can accelerate {company}'s tech goals?\n\nBest regards,\nMuhammad Waqas\nFull-Stack & AI Engineer\nPortfolio: https://iwaqass.xyz/\nGitHub: https://github.com/waqas273`
     },
     {
-      id: 'mern',
-      label: '⚡ MERN Stack & Real-Time Cloud Apps',
-      subject: 'MERN Stack & Serverless Web Application Development',
-      body: `Hi {name},\n\nAre you looking to build or upgrade a web platform for {company}?\n\nI design and build custom web applications using React, Node.js, Express, MongoDB, and Firebase with modern glassmorphism UI/UX design.\n\nKey capabilities I offer:\n- Custom React 19 / Vite / Next.js Web Apps\n- Real-Time Chat & Live Database Listeners\n- Automated Email & Cloud API Integrations\n\nCheck out my live projects at: https://iwaqass.xyz/\n\nLet's connect and discuss your project requirements!\n\nBest,\nMuhammad Waqas`
+      id: 'webapp_upgrade',
+      label: '⚡ Web App Upgrade & Performance Optimization',
+      subject: "Web Application Modernization & Tech Stack Optimization for {company}",
+      body: `Hi {name},\n\nAre you planning to upgrade or build new web features for {company} this quarter?\n\nI partner with growing businesses to engineer custom, ultra-fast web platforms using React 19, Node.js, and serverless cloud databases with modern cyberpunk glassmorphism UI/UX design.\n\nKey services I deliver for {company}:\n- Custom Web App Development from scratch or legacy code refactoring.\n- Real-Time Cloud Solutions (Firebase, MongoDB, WebSockets).\n- Third-Party API & Payment Gateway Integrations.\n\nExplore my live client work and interactive demos: https://iwaqass.xyz/\n\nLet's connect and discuss your current technical roadmap!\n\nBest regards,\nMuhammad Waqas\nFull-Stack Web Engineer\nPortfolio: https://iwaqass.xyz/\nGitHub: https://github.com/waqas273`
     },
     {
-      id: 'ai_rag',
-      label: '🧠 AI Vector Search & Custom RAG Pipelines',
-      subject: 'AI-Powered Search & Automated Workflow Integration',
-      body: `Hi {name},\n\nI wanted to share how AI automation can streamline customer support and document processing for {company}.\n\nI build custom RAG (Retrieval-Augmented Generation) pipelines using ChromaDB vector databases, Groq Llama-3 models, and TensorFlow.js for client-side filtering.\n\nWhat this means for {company}:\n- Automated AI customer support chatbots trained on your business data\n- Instant document search and PDF question-answering\n- Real-time intelligent lead qualification\n\nSee live AI demos on my portfolio: https://iwaqass.xyz/\n\nLet me know if you would like to test a quick demo for {company}.\n\nRegards,\nMuhammad Waqas`
+      id: 'ai_automation',
+      label: '🧠 AI Automation & Custom RAG Vector Search',
+      subject: "Automating {company}'s Workflows with Custom AI Vector Pipelines",
+      body: `Hi {name},\n\nI wanted to share how custom AI automation can reduce operational overhead and improve customer retention for {company}.\n\nI build tailored RAG (Retrieval-Augmented Generation) AI microservices that allow companies to query their internal documents, automate customer support, and process leads in real time.\n\nWhat I can build for {company}:\n- Intelligent Customer Support AI Chatbots trained on your business data.\n- Automated Document & PDF Search Engines (ChromaDB + Vector Embeddings).\n- Custom AI Microservices integrated into your existing web app.\n\nInspect live working AI demos on my portfolio: https://iwaqass.xyz/\n\nLet me know if you would like to test a quick 5-minute demo tailored for {company}.\n\nBest regards,\nMuhammad Waqas\nAI & Full-Stack Solutions Engineer\nPortfolio: https://iwaqass.xyz/\nGitHub: https://github.com/waqas273`
     }
   ];
 
@@ -285,38 +285,45 @@ export default function AdminDashboard() {
         
         setRecipientsList(prev => prev.map((item, idx) => idx === i ? { ...item, status: 'SUCCESS' } : item));
         
-        setDispatchLogs(prev => [
-          {
-            id: `${rec.id}-${Date.now()}`,
-            email: rec.email,
-            name: rec.name,
-            company: rec.company,
-            status: 'SUCCESS',
-            date: dateStr,
-            time: timeStr,
-            subject: outreachSubject,
-            details: 'Delivered successfully via EmailJS'
-          },
-          ...prev
-        ]);
+        const successLog = {
+          email: rec.email,
+          name: rec.name,
+          company: rec.company,
+          status: 'SUCCESS',
+          date: dateStr,
+          time: timeStr,
+          subject: outreachSubject,
+          details: 'Delivered successfully via EmailJS',
+          createdAt: Date.now()
+        };
+
+        try {
+          await addDoc(collection(db, 'outreach_logs'), successLog);
+        } catch (e) {
+          console.error("Firestore log save error:", e);
+        }
       } catch (err) {
         console.error(`Bulk send error for ${rec.email}:`, err);
         const errMsg = err.text || err.message || 'Dispatch error';
         setRecipientsList(prev => prev.map((item, idx) => idx === i ? { ...item, status: 'FAILED', error: errMsg } : item));
-        setDispatchLogs(prev => [
-          {
-            id: `${rec.id}-${Date.now()}`,
-            email: rec.email,
-            name: rec.name,
-            company: rec.company,
-            status: 'FAILED',
-            date: dateStr,
-            time: timeStr,
-            subject: outreachSubject,
-            details: errMsg
-          },
-          ...prev
-        ]);
+        
+        const failedLog = {
+          email: rec.email,
+          name: rec.name,
+          company: rec.company,
+          status: 'FAILED',
+          date: dateStr,
+          time: timeStr,
+          subject: outreachSubject,
+          details: errMsg,
+          createdAt: Date.now()
+        };
+
+        try {
+          await addDoc(collection(db, 'outreach_logs'), failedLog);
+        } catch (e) {
+          console.error("Firestore log save error:", e);
+        }
       }
 
       if (i < recipientsList.length - 1) {
@@ -351,10 +358,17 @@ export default function AdminDashboard() {
     setRecipientsList(prev => prev.map(item => ({ ...item, status: 'PENDING', error: null })));
   };
 
-  const handleClearDispatchLogs = () => {
-    if (window.confirm("Are you sure you want to clear all persistent dispatch logs?")) {
-      setDispatchLogs([]);
-      localStorage.removeItem('outreach_dispatch_logs');
+  const handleClearDispatchLogs = async () => {
+    if (window.confirm("Are you sure you want to clear all persistent dispatch logs from Firestore?")) {
+      try {
+        const snapshot = await getDocs(collection(db, 'outreach_logs'));
+        const deletePromises = snapshot.docs.map(docSnap => deleteDoc(doc(db, 'outreach_logs', docSnap.id)));
+        await Promise.all(deletePromises);
+        setDispatchLogs([]);
+      } catch (e) {
+        console.error("Failed to clear outreach logs from Firestore", e);
+        alert("Error clearing logs from Firestore: " + (e.message || e));
+      }
     }
   };
 
