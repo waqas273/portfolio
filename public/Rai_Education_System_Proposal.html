@@ -7,41 +7,39 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap');
 
-    @page {
-      size: A4;
-      margin: 0;
-    }
-
     * {
       box-sizing: border-box;
-      -webkit-print-color-adjust: exact !important;
-      print-color-adjust: exact !important;
     }
 
     body {
       margin: 0;
-      padding: 0;
+      padding: 20px 10px;
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background-color: #090a0f;
+      background-color: #07080c;
       color: #e2e8f0;
-      line-height: 1.5;
+      line-height: 1.6;
     }
 
     .page-container {
-      width: 210mm;
-      min-height: 297mm;
+      max-width: 860px;
       margin: 0 auto;
       background-color: #0d0f17;
       border: 1px solid #1e2333;
-      padding: 40px 45px;
+      border-radius: 16px;
+      padding: 35px 40px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
       position: relative;
+      overflow: hidden;
     }
 
-    /* Executive Top Banner Bar */
+    /* Executive Top Accent Bar */
     .top-accent {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
       height: 6px;
       background: linear-gradient(90deg, #00ff66 0%, #00e5ff 50%, #3b82f6 100%);
-      margin: -40px -45px 35px -45px;
     }
 
     /* Header Identity */
@@ -52,6 +50,8 @@
       border-bottom: 1px solid #1e2333;
       padding-bottom: 24px;
       margin-bottom: 30px;
+      flex-wrap: wrap;
+      gap: 16px;
     }
 
     .brand-title {
@@ -93,17 +93,19 @@
       background-color: #121522;
       border: 1px solid #1e2333;
       border-left: 4px solid #00ff66;
-      border-radius: 8px;
-      padding: 18px 22px;
+      border-radius: 10px;
+      padding: 20px 24px;
       margin-bottom: 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
     }
 
     .client-info h3 {
       margin: 0;
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 800;
       color: #ffffff;
     }
@@ -117,12 +119,13 @@
 
     .client-url {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
+      font-size: 12px;
       color: #38bdf8;
       background-color: rgba(56, 189, 248, 0.1);
-      padding: 4px 10px;
-      border-radius: 4px;
+      padding: 6px 14px;
+      border-radius: 6px;
       text-decoration: none;
+      border: 1px solid rgba(56, 189, 248, 0.2);
     }
 
     /* Section Headers */
@@ -133,8 +136,8 @@
       font-family: 'JetBrains Mono', monospace;
       text-transform: uppercase;
       letter-spacing: 1px;
-      margin-top: 25px;
-      margin-bottom: 15px;
+      margin-top: 30px;
+      margin-bottom: 16px;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -147,85 +150,109 @@
       background-color: #1e2333;
     }
 
-    /* Feature Grid */
+    /* General Overview Grid */
     .grid-2 {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 18px;
       margin-bottom: 25px;
     }
 
     .feature-box {
       background-color: #121522;
       border: 1px solid #1e2333;
-      border-radius: 8px;
-      padding: 16px 18px;
+      border-radius: 10px;
+      padding: 20px 22px;
     }
 
     .feature-box h4 {
-      margin: 0 0 8px 0;
-      font-size: 13px;
+      margin: 0 0 10px 0;
+      font-size: 14px;
       font-weight: 800;
       color: #ffffff;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
     }
 
     .feature-box p {
+      margin: 0 0 10px 0;
+      font-size: 12px;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+
+    .feature-box ul {
       margin: 0;
-      font-size: 11.5px;
+      padding-left: 18px;
+      font-size: 12px;
+      color: #cbd5e1;
+    }
+
+    .feature-box li {
+      margin-bottom: 6px;
+    }
+
+    /* Highlight Box for Fee Model */
+    .fee-highlight {
+      background: linear-gradient(135deg, rgba(0, 255, 102, 0.08) 0%, rgba(0, 229, 255, 0.05) 100%);
+      border: 1px solid rgba(0, 255, 102, 0.3);
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin-bottom: 25px;
+    }
+
+    .fee-highlight h4 {
+      margin: 0 0 8px 0;
+      font-size: 15px;
+      font-weight: 800;
+      color: #00ff66;
+    }
+
+    .fee-highlight p {
+      margin: 0;
+      font-size: 12.5px;
       color: #cbd5e1;
       line-height: 1.6;
     }
 
-    .feature-box ul {
-      margin: 6px 0 0 0;
-      padding-left: 16px;
-      font-size: 11px;
-      color: #94a3b8;
-    }
-
-    .feature-box li {
-      margin-bottom: 3px;
-    }
-
     /* Highlight College LMS Box */
     .lms-box {
-      background: linear-gradient(135deg, rgba(0, 229, 255, 0.08) 0%, rgba(0, 255, 102, 0.05) 100%);
+      background: linear-gradient(135deg, rgba(0, 229, 255, 0.08) 0%, rgba(59, 130, 246, 0.05) 100%);
       border: 1px solid rgba(0, 229, 255, 0.3);
-      border-radius: 8px;
-      padding: 20px 22px;
+      border-radius: 10px;
+      padding: 20px 24px;
       margin-bottom: 30px;
     }
 
     .lms-box h4 {
-      margin: 0 0 6px 0;
-      font-size: 14px;
+      margin: 0 0 8px 0;
+      font-size: 15px;
       font-weight: 800;
       color: #00e5ff;
     }
 
     .lms-box p {
       margin: 0;
-      font-size: 12px;
+      font-size: 12.5px;
       color: #cbd5e1;
       line-height: 1.6;
     }
 
-    /* Stack Comparison Table */
+    /* Records Summary Table */
     .table-container {
       margin-bottom: 30px;
+      overflow-x: auto;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 11.5px;
+      font-size: 12px;
     }
 
     th, td {
-      padding: 10px 14px;
+      padding: 12px 16px;
       text-align: left;
       border-bottom: 1px solid #1e2333;
     }
@@ -234,7 +261,7 @@
       background-color: #121522;
       color: #94a3b8;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
+      font-size: 11px;
       text-transform: uppercase;
     }
 
@@ -252,38 +279,43 @@
     .cta-card {
       background: linear-gradient(135deg, #121522 0%, #171b2e 100%);
       border: 1px solid #272d42;
-      border-radius: 12px;
-      padding: 24px;
+      border-radius: 14px;
+      padding: 30px 24px;
       text-align: center;
       margin-top: 35px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     }
 
     .cta-card h3 {
-      margin: 0 0 6px 0;
-      font-size: 16px;
+      margin: 0 0 8px 0;
+      font-size: 18px;
       font-weight: 900;
       color: #ffffff;
     }
 
     .cta-card p {
-      margin: 0 0 18px 0;
-      font-size: 12px;
+      margin: 0 0 22px 0;
+      font-size: 13px;
       color: #94a3b8;
     }
 
     .btn-portfolio {
       display: inline-block;
-      padding: 14px 32px;
+      padding: 16px 36px;
       background: linear-gradient(90deg, #00ff66 0%, #00e5ff 100%);
       color: #07080c !important;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 900;
       text-transform: uppercase;
       letter-spacing: 1px;
       text-decoration: none !important;
-      border-radius: 8px;
+      border-radius: 10px;
       box-shadow: 0 0 25px rgba(0, 255, 102, 0.4);
+      transition: transform 0.2s ease;
+    }
+
+    .btn-portfolio:hover {
+      transform: translateY(-2px);
     }
 
     .contact-footer {
@@ -293,7 +325,8 @@
       font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
       color: #64748b;
-      margin-top: 16px;
+      margin-top: 20px;
+      flex-wrap: wrap;
     }
 
     .contact-footer a {
@@ -334,108 +367,116 @@
     </div>
 
     <!-- Executive Summary -->
-    <div style="font-size: 12.5px; color: #cbd5e1; line-height: 1.7; margin-bottom: 25px;">
-      <strong style="color: #ffffff;">Executive Objective:</strong> To modernize Rai Education System's web presence from a static Google Site into a high-speed, secure, multi-stakeholder custom Web Application. This platform will digitize student admissions, fee tracking, daily attendance, staff jobs, parent communication, and provide a university-grade LMS as Rai Education System expands into College level.
+    <div style="font-size: 13px; color: #cbd5e1; line-height: 1.7; margin-bottom: 25px;">
+      <strong style="color: #ffffff;">General Objective:</strong> To modernize Rai Education System's web presence from a basic Google Site into a custom, high-performance Web Portal. This system will maintain complete digital records for fee tracking, student admissions, class management, role-based access, and provide an enterprise LMS as Rai Education System scales into College level.
     </div>
 
-    <!-- Core Functional Modules -->
-    <div class="section-title">01. CORE ADMINISTRATIVE & ACADEMIC MODULES</div>
+    <!-- Fee Management Model Highlight -->
+    <div class="fee-highlight">
+      <h4>💳 Fee Tracking Model (No Online Payments Needed)</h4>
+      <p>
+        <strong>Simple & Administrative:</strong> Parents do <em>not</em> need to pay online via payment gateways. Fees can be paid physically or via bank transfer as usual. The <strong>School Accountant / Admin</strong> updates the student's fee status (Paid / Pending / Overdue) directly in the system upon receipt, keeping complete, permanent digital records and generating fee slips.
+      </p>
+    </div>
+
+    <!-- General Overview of Core Modules -->
+    <div class="section-title">01. GENERAL OVERVIEW OF PORTAL MODULES & RECORDS</div>
 
     <div class="grid-2">
       
-      <!-- Module 1 -->
+      <!-- Module 1: Fee & Financial Records -->
       <div class="feature-box">
-        <h4>💳 Automated Fee & Financial Engine</h4>
-        <p>Complete real-time fee tracking system for Accountants and Admins.</p>
+        <h4>💵 Accountant Fee Status & Record Manager</h4>
+        <p>Complete record tracking for all student payments.</p>
         <ul>
-          <li>Real-time Paid vs Pending fee status tracking</li>
-          <li>Automated digital fee voucher & slip generation</li>
-          <li>Bank receipt / Cash payment admin approval workflow</li>
+          <li><strong>Status Updates:</strong> Accountant updates fee status (Paid, Pending, Overdue) per student</li>
+          <li><strong>Digital Vouchers:</strong> Printable monthly fee vouchers and payment clearance slips</li>
+          <li><strong>Financial History:</strong> Complete record history of all class fees and pending dues</li>
         </ul>
       </div>
 
-      <!-- Module 2 -->
+      <!-- Module 2: Student & Parent Accounts -->
       <div class="feature-box">
-        <h4>👥 Student & Parent Individual Portals</h4>
-        <p>Dedicated login credentials for every student & parent account.</p>
+        <h4>👥 Student & Parent Individual Accounts</h4>
+        <p>Individual secure login portals for parents and students.</p>
         <ul>
-          <li>Student dashboard: Homework, exam results & schedules</li>
-          <li>Parent dashboard: Live attendance & fee clearance tracking</li>
-          <li>Real-time push notifications & school notices</li>
+          <li><strong>Parent Portal:</strong> Check student attendance, fee status, and school notices</li>
+          <li><strong>Student Portal:</strong> Access homework, timetables, and exam result cards</li>
+          <li><strong>Record Access:</strong> Instant digital access to student academic records</li>
         </ul>
       </div>
 
-      <!-- Module 3 -->
+      <!-- Module 3: Admissions & Class Directory -->
       <div class="feature-box">
-        <h4>📝 Digital Admissions & Class Manager</h4>
-        <p>Streamlined student enrollment from Class 1 through Class 10.</p>
+        <h4>📝 Digital Admissions & Class Directory</h4>
+        <p>Paperless registration and class section records for Classes 1 to 10.</p>
         <ul>
-          <li>Online admission application forms with document upload</li>
-          <li>Automated Roll Number & Section generation</li>
-          <li>Class-by-class student directory and teacher assignments</li>
+          <li><strong>Online Admissions:</strong> New student admission forms & document records</li>
+          <li><strong>Class Management:</strong> Roll number assignments and class section lists</li>
+          <li><strong>Student Directory:</strong> Master record of active and alumni students</li>
         </ul>
       </div>
 
-      <!-- Module 4 -->
+      <!-- Module 4: Role-Based Access & Staff Management -->
       <div class="feature-box">
-        <h4>🔒 Role-Based Access Control (RBAC)</h4>
-        <p>Custom security permissions for all institutional stakeholders.</p>
+        <h4>🔒 Role-Based Access & Staff Jobs Portal</h4>
+        <p>Security roles tailored for school management and staff.</p>
         <ul>
-          <li>Portals for Super Admin, Principal, Accountant, Teachers & Parents</li>
-          <li>Staff Management & Staff Attendance tracking</li>
-          <li>Career & Job Openings portal for teacher recruitment</li>
+          <li><strong>Roles:</strong> Super Admin, Principal, Accountant, Teacher, Student, Parent</li>
+          <li><strong>Staff Records:</strong> Teacher directory, attendance, and payroll records</li>
+          <li><strong>Job Portal:</strong> Online application portal for prospective teacher hiring</li>
         </ul>
       </div>
 
     </div>
 
     <!-- Future-Ready College LMS -->
-    <div class="section-title">02. COLLEGE EXPANSION & ENTERPRISE LMS</div>
+    <div class="section-title">02. COLLEGE EXPANSION & LMS READY</div>
 
     <div class="lms-box">
-      <h4>🎓 Future-Ready Learning Management System (LMS)</h4>
+      <h4>🎓 Scalable College / University Level LMS</h4>
       <p>
-        As Rai Education System scales from Classes 1-10 into College and Higher Education, the portal seamlessly activates a university-grade LMS. Includes online lecture uploads, assignment submissions, digital quizzes, auto-graded exams, and multi-department stakeholder portals.
+        When Rai Education System expands from Classes 1-10 into College level, the platform easily scales into a full Learning Management System (LMS) with digital lecture materials, online assignment uploads, quizzes, and university-style stakeholder records.
       </p>
     </div>
 
-    <!-- Feature Comparison Table -->
-    <div class="section-title">03. CURRENT GOOGLE SITE VS CUSTOM SYSTEM</div>
+    <!-- Records Comparison Summary -->
+    <div class="section-title">03. SYSTEM CAPABILITIES & RECORDS OVERVIEW</div>
 
     <div class="table-container">
       <table>
         <thead>
           <tr>
-            <th>Feature Module</th>
-            <th>Current Site (Google Sites)</th>
-            <th>Proposed Custom Web Portal</th>
+            <th>Module Name</th>
+            <th>How It Works</th>
+            <th>Digital Record Status</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td><strong>Student & Parent Login Accounts</strong></td>
-            <td style="color: #ef4444;">Not Supported</td>
-            <td class="check-yes">&#10004; Dedicated Individual Accounts</td>
+            <td><strong>Fee Status Tracking</strong></td>
+            <td>Accountant updates status (Paid/Pending) upon receiving fee</td>
+            <td class="check-yes">&#10004; Permanent Fee History & Receipts</td>
           </tr>
           <tr>
-            <td><strong>Fee Paid / Pending Tracker & Vouchers</strong></td>
-            <td style="color: #ef4444;">Manual Paper Work</td>
-            <td class="check-yes">&#10004; Automated Digital Receipts & Status</td>
+            <td><strong>Student & Parent Portals</strong></td>
+            <td>Individual accounts with login credentials</td>
+            <td class="check-yes">&#10004; Attendance & Result Records</td>
           </tr>
           <tr>
-            <td><strong>Online Admissions & Document Upload</strong></td>
-            <td style="color: #ef4444;">Manual Forms</td>
-            <td class="check-yes">&#10004; 100% Paperless Digital Enrollment</td>
+            <td><strong>Admissions & Classes</strong></td>
+            <td>Digital forms & class section management (1-10)</td>
+            <td class="check-yes">&#10004; Master Student Directory</td>
           </tr>
           <tr>
-            <td><strong>Staff Job Openings & Applications</strong></td>
-            <td style="color: #ef4444;">Not Available</td>
-            <td class="check-yes">&#10004; Built-in Career Portal</td>
+            <td><strong>Job Management</strong></td>
+            <td>Career page for teacher & staff applications</td>
+            <td class="check-yes">&#10004; Applicant & Staff Records</td>
           </tr>
           <tr>
-            <td><strong>College Level LMS & Lectures</strong></td>
-            <td style="color: #ef4444;">Not Supported</td>
-            <td class="check-yes">&#10004; University-Grade LMS Ready</td>
+            <td><strong>College Level LMS</strong></td>
+            <td>Lecture uploads, assignments & grading tools</td>
+            <td class="check-yes">&#10004; Academic Material & Marks Records</td>
           </tr>
         </tbody>
       </table>
@@ -444,7 +485,7 @@
     <!-- Call-to-Action Portfolio Section -->
     <div class="cta-card">
       <h3>Ready to Modernize Rai Education System?</h3>
-      <p>Inspect my verified full-stack software development portfolio, live client projects, and interactive demos:</p>
+      <p>Inspect my verified full-stack software development portfolio, live client projects, and interactive web demos:</p>
       
       <a href="https://iwaqass.xyz/" target="_blank" class="btn-portfolio">
         INSPECT LIVE DEVELOPER PORTFOLIO &rarr;
@@ -453,6 +494,7 @@
       <div class="contact-footer">
         <div>Developer: <strong>Muhammad Waqas</strong></div>
         <div>Portfolio: <a href="https://iwaqass.xyz/" target="_blank">https://iwaqass.xyz/</a></div>
+        <div>GitHub: <a href="https://github.com/waqas273" target="_blank">https://github.com/waqas273</a></div>
       </div>
     </div>
 
