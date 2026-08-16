@@ -102,6 +102,7 @@ export default function AdminDashboard() {
   const [csvRawInput, setCsvRawInput] = useState('');
   const [dispatchStatus, setDispatchStatus] = useState('IDLE'); // 'IDLE' | 'SENDING' | 'PAUSED' | 'COMPLETED' | 'CANCELLED'
   const [sendDelaySeconds, setSendDelaySeconds] = useState(1.5);
+  const [currentDispatchIndex, setCurrentDispatchIndex] = useState(0);
   const [dispatchLogs, setDispatchLogs] = useState(() => {
     try {
       const saved = localStorage.getItem('outreach_dispatch_logs');
