@@ -250,6 +250,8 @@ export default function AdminDashboard() {
       const templateParams = {
         to_name: rec.name,
         to_email: rec.email,
+        name: rec.name,
+        email: rec.email,
         company_name: rec.company,
         subject: outreachSubject,
         message: personalizedMessage,
