@@ -128,7 +128,7 @@ export default function AdminDashboard() {
     }
   ];
 
-  // Helper: Parse CSV text into Recipients List
+  // Helper: Parse CSV text into Recipients List with Smart Regex Email Extraction
   const parseCsvText = (text) => {
     if (!text || !text.trim()) return [];
     const lines = text.split(/\r?\n/).filter(line => line.trim() !== '');
@@ -138,35 +138,33 @@ export default function AdminDashboard() {
     const hasHeader = firstLine.includes('email') || firstLine.includes('name') || firstLine.includes('company');
     const startIdx = hasHeader ? 1 : 0;
 
-    let emailCol = 0;
-    let nameCol = 1;
-    let companyCol = 2;
-
-    if (hasHeader) {
-      const headers = lines[0].split(/[,;\t]/).map(h => h.trim().toLowerCase());
-      headers.forEach((h, idx) => {
-        if (h.includes('email')) emailCol = idx;
-        else if (h.includes('name')) nameCol = idx;
-        else if (h.includes('company') || h.includes('org')) companyCol = idx;
-      });
-    }
+    const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
 
     for (let i = startIdx; i < lines.length; i++) {
-      const parts = lines[i].split(/[,;\t]/).map(p => p.trim().replace(/^["']|["']$/g, ''));
-      const email = parts[emailCol] || parts[0] || '';
-      const name = parts[nameCol] || (email ? email.split('@')[0] : '');
-      const company = parts[companyCol] || 'your company';
+      const rawLine = lines[i];
+      const match = rawLine.match(emailRegex);
+      if (!match) continue;
 
-      if (email && email.includes('@')) {
-        list.push({
-          id: `rec-${i}-${Date.now()}`,
-          email,
-          name: name || email.split('@')[0],
-          company: company || 'your company',
-          status: 'PENDING',
-          error: null
-        });
-      }
+      const cleanEmail = match[0].trim().toLowerCase();
+      
+      // Remove email from line to get remaining parts for name & company
+      const lineWithoutEmail = rawLine.replace(match[0], '');
+      const remainingParts = lineWithoutEmail
+        .split(/[,;\t]/)
+        .map(p => p.trim().replace(/^["'\s.,;:]+|["'\s.,;:]+$/g, ''))
+        .filter(p => p.length > 0);
+
+      const name = remainingParts[0] || cleanEmail.split('@')[0];
+      const company = remainingParts[1] || 'your company';
+
+      list.push({
+        id: `rec-${i}-${Date.now()}`,
+        email: cleanEmail,
+        name: name || cleanEmail.split('@')[0],
+        company: company || 'your company',
+        status: 'PENDING',
+        error: null
+      });
     }
     return list;
   };
