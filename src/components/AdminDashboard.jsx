@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { auth, db } from '../firebase';
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, setDoc, collection, getDocs, deleteDoc, addDoc, updateDoc } from 'firebase/firestore';
-import { Terminal, Shield, LogOut, Save, Plus, Trash2, Edit2, Mail, Briefcase, FileCode, Cpu, Loader2, Upload, Image, X, Search, Filter, Sparkles, Layers, ExternalLink, FolderPlus, Check, LayoutGrid, List, Eye, Link } from 'lucide-react';
+import { Terminal, Shield, LogOut, Save, Plus, Trash2, Edit2, Mail, Briefcase, FileCode, Cpu, Loader2, Upload, Image, X, Search, Filter, Sparkles, Layers, ExternalLink, FolderPlus, Check, LayoutGrid, List, Eye, Link, Send, Play, Pause, Square, CheckCircle2, AlertTriangle, FileSpreadsheet, Users, MailCheck, RefreshCw, Copy } from 'lucide-react';
 import emailjs from '@emailjs/browser';
 import ThemeToggle from './ThemeToggle';
 
@@ -90,6 +90,240 @@ export default function AdminDashboard() {
   const [replyingToId, setReplyingToId] = useState(null);
   const [replyText, setReplyText] = useState({});
   const [replyStatus, setReplyStatus] = useState({});
+
+  // Bulk Outreach Email Dispatcher States
+  const [outreachTemplateId, setOutreachTemplateId] = useState(import.meta.env.VITE_EMAILJS_OUTREACH_TEMPLATE_ID || '');
+  const [outreachSubject, setOutreachSubject] = useState('Full-Stack Web Development & AI Workflow Integration Services');
+  const [outreachMessage, setOutreachMessage] = useState(
+    `Hi {name},\n\nI noticed {company} is scaling and wanted to reach out regarding your web application & digital infrastructure.\n\nI am Muhammad Waqas, a Full-Stack & AI Engineer. I specialize in building high-performance web applications (React 19, Next.js, Node.js, MERN stack) and integrating custom AI Vector RAG pipelines to automate business workflows.\n\nHere is a quick overview of what I can build for {company}:\n- Modern, ultra-fast web applications & responsive dashboards\n- Real-time cloud databases (Firebase / MongoDB)\n- AI-driven automated chat, document RAG, and custom microservices\n\nYou can inspect my live developer portfolio here: https://iwaqass.xyz/\n\nWould you be open to a brief chat this week to discuss how we can scale your application?\n\nBest regards,\nMuhammad Waqas\nFull-Stack & AI Engineer\nPortfolio: https://iwaqass.xyz/`
+  );
+  const [recipientsList, setRecipientsList] = useState([]);
+  const [csvRawInput, setCsvRawInput] = useState('');
+  const [dispatchStatus, setDispatchStatus] = useState('IDLE'); // 'IDLE' | 'SENDING' | 'PAUSED' | 'COMPLETED' | 'CANCELLED'
+  const [sendDelaySeconds, setSendDelaySeconds] = useState(1.5);
+  const [currentDispatchIndex, setCurrentDispatchIndex] = useState(0);
+  const [dispatchLogs, setDispatchLogs] = useState([]);
+  const dispatchControlRef = useRef({ isPaused: false, isCancelled: false });
+
+  // Pitch Template Presets
+  const pitchPresets = [
+    {
+      id: 'fullstack',
+      label: '🚀 Full-Stack Web Development & AI Integration',
+      subject: 'Full-Stack Web Development & AI Workflow Integration Services',
+      body: `Hi {name},\n\nI noticed {company} is scaling and wanted to reach out regarding your web application & digital infrastructure.\n\nI am Muhammad Waqas, a Full-Stack & AI Engineer. I specialize in building high-performance web applications (React 19, Next.js, Node.js, MERN stack) and integrating custom AI Vector RAG pipelines to automate business workflows.\n\nHere is a quick overview of what I can build for {company}:\n- Modern, ultra-fast web applications & responsive dashboards\n- Real-time cloud databases (Firebase / MongoDB)\n- AI-driven automated chat, document RAG, and custom microservices\n\nYou can inspect my live developer portfolio here: https://iwaqass.xyz/\n\nWould you be open to a brief chat this week to discuss how we can scale your application?\n\nBest regards,\nMuhammad Waqas\nFull-Stack & AI Engineer\nPortfolio: https://iwaqass.xyz/`
+    },
+    {
+      id: 'mern',
+      label: '⚡ MERN Stack & Real-Time Cloud Apps',
+      subject: 'MERN Stack & Serverless Web Application Development',
+      body: `Hi {name},\n\nAre you looking to build or upgrade a web platform for {company}?\n\nI design and build custom web applications using React, Node.js, Express, MongoDB, and Firebase with modern glassmorphism UI/UX design.\n\nKey capabilities I offer:\n- Custom React 19 / Vite / Next.js Web Apps\n- Real-Time Chat & Live Database Listeners\n- Automated Email & Cloud API Integrations\n\nCheck out my live projects at: https://iwaqass.xyz/\n\nLet's connect and discuss your project requirements!\n\nBest,\nMuhammad Waqas`
+    },
+    {
+      id: 'ai_rag',
+      label: '🧠 AI Vector Search & Custom RAG Pipelines',
+      subject: 'AI-Powered Search & Automated Workflow Integration',
+      body: `Hi {name},\n\nI wanted to share how AI automation can streamline customer support and document processing for {company}.\n\nI build custom RAG (Retrieval-Augmented Generation) pipelines using ChromaDB vector databases, Groq Llama-3 models, and TensorFlow.js for client-side filtering.\n\nWhat this means for {company}:\n- Automated AI customer support chatbots trained on your business data\n- Instant document search and PDF question-answering\n- Real-time intelligent lead qualification\n\nSee live AI demos on my portfolio: https://iwaqass.xyz/\n\nLet me know if you would like to test a quick demo for {company}.\n\nRegards,\nMuhammad Waqas`
+    }
+  ];
+
+  // Helper: Parse CSV text into Recipients List
+  const parseCsvText = (text) => {
+    if (!text || !text.trim()) return [];
+    const lines = text.split(/\r?\n/).filter(line => line.trim() !== '');
+    const list = [];
+    
+    const firstLine = lines[0].toLowerCase();
+    const hasHeader = firstLine.includes('email') || firstLine.includes('name') || firstLine.includes('company');
+    const startIdx = hasHeader ? 1 : 0;
+
+    let emailCol = 0;
+    let nameCol = 1;
+    let companyCol = 2;
+
+    if (hasHeader) {
+      const headers = lines[0].split(/[,;\t]/).map(h => h.trim().toLowerCase());
+      headers.forEach((h, idx) => {
+        if (h.includes('email')) emailCol = idx;
+        else if (h.includes('name')) nameCol = idx;
+        else if (h.includes('company') || h.includes('org')) companyCol = idx;
+      });
+    }
+
+    for (let i = startIdx; i < lines.length; i++) {
+      const parts = lines[i].split(/[,;\t]/).map(p => p.trim().replace(/^["']|["']$/g, ''));
+      const email = parts[emailCol] || parts[0] || '';
+      const name = parts[nameCol] || (email ? email.split('@')[0] : '');
+      const company = parts[companyCol] || 'your company';
+
+      if (email && email.includes('@')) {
+        list.push({
+          id: `rec-${i}-${Date.now()}`,
+          email,
+          name: name || email.split('@')[0],
+          company: company || 'your company',
+          status: 'PENDING',
+          error: null
+        });
+      }
+    }
+    return list;
+  };
+
+  // CSV File Handler
+  const handleCsvFileUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const text = evt.target.result;
+      setCsvRawInput(text);
+      const parsed = parseCsvText(text);
+      setRecipientsList(parsed);
+      setCurrentDispatchIndex(0);
+    };
+    reader.readAsText(file);
+  };
+
+  // Manual Raw CSV Text Area Change
+  const handleRawCsvChange = (e) => {
+    const text = e.target.value;
+    setCsvRawInput(text);
+    const parsed = parseCsvText(text);
+    setRecipientsList(parsed);
+    setCurrentDispatchIndex(0);
+  };
+
+  // Insert Sample CSV
+  const handleLoadSampleCsv = () => {
+    const sample = `email,name,company\nclient1@example.com,Alexander Vance,Vance Technologies\nfounder@innovate.io,Sarah Connor,Innovate AI\nhr@techcorp.com,David Miller,TechCorp Solutions`;
+    setCsvRawInput(sample);
+    const parsed = parseCsvText(sample);
+    setRecipientsList(parsed);
+    setCurrentDispatchIndex(0);
+  };
+
+  // Bulk Email Dispatcher Engine Loop
+  const startBulkDispatch = async () => {
+    if (recipientsList.length === 0) {
+      alert("Please upload a CSV file or add recipient emails first.");
+      return;
+    }
+    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_uqsyfa5';
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'W1IquHHwgOi2bFZ9V';
+    const avatarUrl = import.meta.env.VITE_EMAILJS_AVATAR_URL || 'https://res.cloudinary.com/suzllkcp/image/upload/v1786813178/tbljeoj4ygwwky4lin2z.jpg';
+
+    if (!outreachTemplateId || !outreachTemplateId.trim()) {
+      alert("Please enter your EmailJS Outreach Template ID before dispatching.");
+      return;
+    }
+
+    dispatchControlRef.current = { isPaused: false, isCancelled: false };
+    setDispatchStatus('SENDING');
+
+    for (let i = currentDispatchIndex; i < recipientsList.length; i++) {
+      if (dispatchControlRef.current.isCancelled) {
+        setDispatchStatus('CANCELLED');
+        break;
+      }
+
+      while (dispatchControlRef.current.isPaused) {
+        setDispatchStatus('PAUSED');
+        await new Promise(r => setTimeout(r, 400));
+        if (dispatchControlRef.current.isCancelled) {
+          setDispatchStatus('CANCELLED');
+          break;
+        }
+      }
+      if (dispatchControlRef.current.isCancelled) break;
+
+      setDispatchStatus('SENDING');
+      setCurrentDispatchIndex(i);
+
+      const rec = recipientsList[i];
+      
+      const personalizedMessage = outreachMessage
+        .replaceAll('{name}', rec.name)
+        .replaceAll('{company}', rec.company)
+        .replaceAll('{email}', rec.email);
+
+      const templateParams = {
+        to_name: rec.name,
+        to_email: rec.email,
+        company_name: rec.company,
+        subject: outreachSubject,
+        message: personalizedMessage,
+        avatar_url: avatarUrl,
+        developer_name: profileData.name || 'Muhammad Waqas',
+        developer_role: profileData.role || 'AI-Driven Full-Stack Engineer',
+      };
+
+      try {
+        await emailjs.send(serviceId, outreachTemplateId.trim(), templateParams, publicKey);
+        
+        setRecipientsList(prev => prev.map((item, idx) => idx === i ? { ...item, status: 'SUCCESS' } : item));
+        
+        setDispatchLogs(prev => [
+          {
+            id: `${rec.id}-${Date.now()}`,
+            email: rec.email,
+            name: rec.name,
+            company: rec.company,
+            status: 'SUCCESS',
+            timestamp: new Date().toLocaleTimeString(),
+            details: 'Delivered successfully via EmailJS'
+          },
+          ...prev
+        ]);
+      } catch (err) {
+        console.error(`Bulk send error for ${rec.email}:`, err);
+        const errMsg = err.text || err.message || 'Dispatch error';
+        setRecipientsList(prev => prev.map((item, idx) => idx === i ? { ...item, status: 'FAILED', error: errMsg } : item));
+        setDispatchLogs(prev => [
+          {
+            id: `${rec.id}-${Date.now()}`,
+            email: rec.email,
+            name: rec.name,
+            company: rec.company,
+            status: 'FAILED',
+            timestamp: new Date().toLocaleTimeString(),
+            details: errMsg
+          },
+          ...prev
+        ]);
+      }
+
+      if (i < recipientsList.length - 1) {
+        await new Promise(r => setTimeout(r, Math.max(0.5, sendDelaySeconds) * 1000));
+      }
+    }
+
+    if (!dispatchControlRef.current.isCancelled && !dispatchControlRef.current.isPaused) {
+      setDispatchStatus('COMPLETED');
+    }
+  };
+
+  const pauseBulkDispatch = () => {
+    dispatchControlRef.current.isPaused = true;
+    setDispatchStatus('PAUSED');
+  };
+
+  const resumeBulkDispatch = () => {
+    dispatchControlRef.current.isPaused = false;
+    startBulkDispatch();
+  };
+
+  const cancelBulkDispatch = () => {
+    dispatchControlRef.current.isCancelled = true;
+    setDispatchStatus('CANCELLED');
+  };
+
+  const resetBulkDispatch = () => {
+    dispatchControlRef.current = { isPaused: false, isCancelled: false };
+    setDispatchStatus('IDLE');
+    setCurrentDispatchIndex(0);
+    setRecipientsList(prev => prev.map(item => ({ ...item, status: 'PENDING', error: null })));
+  };
 
   // Image Upload state
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -596,7 +830,8 @@ export default function AdminDashboard() {
             {[
               { id: 'profile', label: '[1] Profile Config', icon: <Cpu className="w-3.5 h-3.5" /> },
               { id: 'projects', label: '[2] Projects CRUD', icon: <FileCode className="w-3.5 h-3.5" /> },
-              { id: 'messages', label: `[3] Messages (${messagesList.length})`, icon: <Mail className="w-3.5 h-3.5" /> }
+              { id: 'messages', label: `[3] Messages (${messagesList.length})`, icon: <Mail className="w-3.5 h-3.5" /> },
+              { id: 'outreach', label: `[4] Bulk Outreach (${recipientsList.length})`, icon: <Send className="w-3.5 h-3.5" /> }
             ].map(tab => (
               <button
                 key={tab.id}
@@ -1536,6 +1771,328 @@ export default function AdminDashboard() {
                 ))
               )}
             </div>
+          </div>
+        )}
+
+        {/* TAB 4: BULK OUTREACH EMAIL DISPATCHER ENGINE */}
+        {activeTab === 'outreach' && (
+          <div className="space-y-6">
+            
+            {/* Top Telemetry Header & Campaign Controls */}
+            <div className="glass-hud rounded-lg border border-zinc-800 p-6 space-y-5 bg-zinc-950/60 shadow-2xl">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-zinc-900 pb-4">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2.5 bg-matrix/15 border border-matrix/40 rounded text-matrix shadow-[0_0_15px_rgba(0,255,102,0.15)]">
+                    <Send className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center space-x-2 font-mono text-xs">
+                      <span className="font-bold text-white uppercase tracking-wider">BULK_OUTREACH // DISPATCH_ENGINE</span>
+                      <span className={`px-2 py-0.5 rounded text-[9px] font-mono font-bold ${
+                        dispatchStatus === 'SENDING' ? 'bg-matrix/20 text-matrix border border-matrix/40 animate-pulse' :
+                        dispatchStatus === 'PAUSED' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40' :
+                        dispatchStatus === 'COMPLETED' ? 'bg-cyber/20 text-cyber border border-cyber/40' :
+                        dispatchStatus === 'CANCELLED' ? 'bg-rose-500/20 text-rose-400 border border-rose-500/40' :
+                        'bg-zinc-900 text-zinc-500 border border-zinc-800'
+                      }`}>
+                        STATUS: {dispatchStatus}
+                      </span>
+                    </div>
+                    <p className="text-[10px] text-zinc-500 font-mono mt-0.5">
+                      Transmit automated personalized cold pitches via EmailJS with live rate limiting & telemetry logs.
+                    </p>
+                  </div>
+                </div>
+
+                {/* EmailJS Outreach Template ID Input */}
+                <div className="w-full md:w-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-3 font-mono text-xs">
+                  <div className="flex items-center space-x-2 bg-zinc-900/90 border border-zinc-850 px-3 py-1.5 rounded">
+                    <span className="text-zinc-500 text-[10px]">TEMPLATE_ID:</span>
+                    <input
+                      type="text"
+                      value={outreachTemplateId}
+                      onChange={(e) => setOutreachTemplateId(e.target.value)}
+                      placeholder="e.g. template_a7asz69"
+                      className="bg-transparent outline-none text-matrix font-semibold w-36 text-xs"
+                    />
+                  </div>
+
+                  <div className="flex items-center space-x-2 bg-zinc-900/90 border border-zinc-850 px-3 py-1.5 rounded">
+                    <span className="text-zinc-500 text-[10px]">DELAY:</span>
+                    <select
+                      value={sendDelaySeconds}
+                      onChange={(e) => setSendDelaySeconds(parseFloat(e.target.value))}
+                      className="bg-transparent outline-none text-white font-semibold text-xs cursor-pointer"
+                    >
+                      <option value={1.0} className="bg-zinc-950 text-white">1.0s (Fast)</option>
+                      <option value={1.5} className="bg-zinc-950 text-white">1.5s (Recommended)</option>
+                      <option value={2.0} className="bg-zinc-950 text-white">2.0s (Safe)</option>
+                      <option value={3.0} className="bg-zinc-950 text-white">3.0s (Ultra Safe)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Progress Bar & Counter Badges */}
+              <div className="space-y-3 font-mono">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-zinc-400 flex items-center space-x-2">
+                    <Users className="w-4 h-4 text-cyber" />
+                    <span>DISPATCH PROGRESS ({currentDispatchIndex} / {recipientsList.length})</span>
+                  </span>
+                  <span className="text-matrix font-bold">
+                    {recipientsList.length > 0 ? Math.round((recipientsList.filter(r => r.status !== 'PENDING').length / recipientsList.length) * 100) : 0}%
+                  </span>
+                </div>
+
+                {/* Progress Bar track */}
+                <div className="w-full h-2.5 bg-zinc-900 rounded-full overflow-hidden border border-zinc-850 relative">
+                  <div 
+                    className="h-full bg-gradient-to-r from-cyber via-matrix to-electric transition-all duration-300 shadow-[0_0_12px_rgba(0,255,102,0.5)]"
+                    style={{
+                      width: `${recipientsList.length > 0 ? (recipientsList.filter(r => r.status !== 'PENDING').length / recipientsList.length) * 100 : 0}%`
+                    }}
+                  />
+                </div>
+
+                {/* Telemetry Stats Pills */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs pt-1">
+                  <div className="p-2.5 rounded bg-zinc-900/60 border border-zinc-850 flex items-center justify-between">
+                    <span className="text-zinc-500 text-[10px]">TOTAL LEADS</span>
+                    <span className="font-bold text-white">{recipientsList.length}</span>
+                  </div>
+                  <div className="p-2.5 rounded bg-matrix/10 border border-matrix/30 flex items-center justify-between">
+                    <span className="text-matrix text-[10px]">SUCCESS (SENT)</span>
+                    <span className="font-bold text-matrix">{recipientsList.filter(r => r.status === 'SUCCESS').length}</span>
+                  </div>
+                  <div className="p-2.5 rounded bg-rose-500/10 border border-rose-500/30 flex items-center justify-between">
+                    <span className="text-rose-400 text-[10px]">FAILED</span>
+                    <span className="font-bold text-rose-400">{recipientsList.filter(r => r.status === 'FAILED').length}</span>
+                  </div>
+                  <div className="p-2.5 rounded bg-zinc-900/60 border border-zinc-850 flex items-center justify-between">
+                    <span className="text-amber-400 text-[10px]">QUEUE PENDING</span>
+                    <span className="font-bold text-amber-400">{recipientsList.filter(r => r.status === 'PENDING').length}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons Toolbar */}
+              <div className="flex flex-wrap items-center gap-3 pt-2 font-mono text-xs">
+                {dispatchStatus === 'IDLE' || dispatchStatus === 'COMPLETED' || dispatchStatus === 'CANCELLED' ? (
+                  <button
+                    onClick={startBulkDispatch}
+                    disabled={recipientsList.length === 0}
+                    className="px-5 py-2 rounded bg-matrix text-obsidian font-bold flex items-center space-x-2 hover:bg-matrix-glow transition-all shadow-[0_0_15px_rgba(0,255,102,0.3)] disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    <Play className="w-4 h-4 fill-current" />
+                    <span>START BULK DISPATCH</span>
+                  </button>
+                ) : null}
+
+                {dispatchStatus === 'SENDING' && (
+                  <button
+                    onClick={pauseBulkDispatch}
+                    className="px-5 py-2 rounded bg-amber-500/20 border border-amber-500/40 text-amber-400 font-bold flex items-center space-x-2 hover:bg-amber-500 hover:text-obsidian transition-all"
+                  >
+                    <Pause className="w-4 h-4 fill-current" />
+                    <span>PAUSE DISPATCH</span>
+                  </button>
+                )}
+
+                {dispatchStatus === 'PAUSED' && (
+                  <button
+                    onClick={resumeBulkDispatch}
+                    className="px-5 py-2 rounded bg-cyber text-obsidian font-bold flex items-center space-x-2 hover:bg-cyber-glow transition-all"
+                  >
+                    <Play className="w-4 h-4 fill-current" />
+                    <span>RESUME DISPATCH</span>
+                  </button>
+                )}
+
+                {dispatchStatus === 'SENDING' || dispatchStatus === 'PAUSED' ? (
+                  <button
+                    onClick={cancelBulkDispatch}
+                    className="px-4 py-2 rounded bg-rose-500/20 border border-rose-500/40 text-rose-400 font-semibold flex items-center space-x-2 hover:bg-rose-600 hover:text-white transition-all"
+                  >
+                    <Square className="w-4 h-4 fill-current" />
+                    <span>CANCEL / HALT</span>
+                  </button>
+                ) : null}
+
+                <button
+                  onClick={resetBulkDispatch}
+                  disabled={dispatchStatus === 'SENDING'}
+                  className="px-4 py-2 rounded bg-zinc-900 border border-zinc-800 text-zinc-400 font-semibold flex items-center space-x-2 hover:border-zinc-700 hover:text-white transition-all disabled:opacity-40"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  <span>RESET QUEUE</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Main 2-Column Section: Left CSV Upload & Right Pitch Editor */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              
+              {/* LEFT COLUMN (5 Cols): CSV IMPORT & RAW DATA */}
+              <div className="lg:col-span-5 glass-hud rounded-lg border border-zinc-800 p-6 space-y-4 bg-zinc-950/50">
+                <div className="flex items-center justify-between border-b border-zinc-900 pb-3">
+                  <div className="flex items-center space-x-2 font-mono text-xs font-bold text-cyber uppercase">
+                    <FileSpreadsheet className="w-4 h-4" />
+                    <span>RECIPIENTS_CSV_IMPORT</span>
+                  </div>
+                  <button
+                    onClick={handleLoadSampleCsv}
+                    className="px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-matrix font-mono text-[10px] hover:border-matrix transition-all flex items-center space-x-1"
+                  >
+                    <Sparkles className="w-3 h-3" />
+                    <span>Load Sample CSV</span>
+                  </button>
+                </div>
+
+                {/* CSV File Dropzone / Upload button */}
+                <div className="space-y-2 font-mono text-xs">
+                  <label className="text-zinc-400 text-[10px] uppercase font-semibold">Option 1: Upload .CSV File</label>
+                  <label className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-zinc-800 rounded-lg hover:border-matrix/50 cursor-pointer bg-zinc-950/40 hover:bg-zinc-900/30 transition-all text-center group">
+                    <Upload className="w-6 h-6 text-zinc-500 group-hover:text-matrix transition-colors mb-2" />
+                    <span className="text-zinc-300 font-semibold">Click to select CSV File</span>
+                    <span className="text-[10px] text-zinc-500 mt-1">Format: email, name, company</span>
+                    <input
+                      type="file"
+                      accept=".csv,.txt"
+                      onChange={handleCsvFileUpload}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+
+                {/* Raw CSV Text Area Input */}
+                <div className="space-y-2 font-mono text-xs">
+                  <div className="flex justify-between items-center text-[10px]">
+                    <span className="text-zinc-400 uppercase font-semibold">Option 2: Paste Raw CSV Text</span>
+                    <span className="text-zinc-600">e.g. email,name,company</span>
+                  </div>
+                  <textarea
+                    value={csvRawInput}
+                    onChange={handleRawCsvChange}
+                    placeholder={`email,name,company\nalex@corp.com,Alex Vance,Vance Tech\nuser@agency.io,Sarah Connor,Innovate AI`}
+                    rows={8}
+                    className="w-full bg-zinc-950/60 border border-zinc-850 rounded p-3 outline-none text-zinc-300 font-mono text-xs leading-relaxed focus:border-cyber transition-all resize-none"
+                  />
+                </div>
+
+                {/* Supported Dynamic Tags Info */}
+                <div className="p-3 rounded bg-zinc-900/50 border border-zinc-850 font-mono text-[10px] space-y-1.5 text-zinc-400">
+                  <span className="text-matrix font-bold block">// DYNAMIC PLACEHOLDERS:</span>
+                  <div className="flex flex-wrap gap-1.5 text-[9px]">
+                    <span className="px-2 py-0.5 rounded bg-zinc-950 border border-zinc-800 text-cyber font-bold">{'{name}'}</span>
+                    <span className="px-2 py-0.5 rounded bg-zinc-950 border border-zinc-800 text-cyber font-bold">{'{company}'}</span>
+                    <span className="px-2 py-0.5 rounded bg-zinc-950 border border-zinc-800 text-cyber font-bold">{'{email}'}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* RIGHT COLUMN (7 Cols): CAMPAIGN MESSAGE & PITCH EDITOR */}
+              <div className="lg:col-span-7 glass-hud rounded-lg border border-zinc-800 p-6 space-y-4 bg-zinc-950/50">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-zinc-900 pb-3 gap-2">
+                  <div className="flex items-center space-x-2 font-mono text-xs font-bold text-electric uppercase">
+                    <MailCheck className="w-4 h-4" />
+                    <span>CAMPAIGN_OUTREACH_PITCH</span>
+                  </div>
+                  <span className="text-[10px] font-mono text-zinc-500">CUSTOM PITCH PRESETS</span>
+                </div>
+
+                {/* Pitch Presets Selector Buttons */}
+                <div className="flex flex-wrap gap-2 font-mono text-[10px]">
+                  {pitchPresets.map(preset => (
+                    <button
+                      key={preset.id}
+                      onClick={() => {
+                        setOutreachSubject(preset.subject);
+                        setOutreachMessage(preset.body);
+                      }}
+                      className="px-3 py-1.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-300 hover:border-electric hover:text-electric transition-all font-semibold"
+                    >
+                      {preset.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Campaign Subject Line */}
+                <div className="space-y-1.5 font-mono text-xs">
+                  <label className="text-zinc-400 text-[10px] uppercase font-semibold">EMAIL SUBJECT LINE</label>
+                  <input
+                    type="text"
+                    value={outreachSubject}
+                    onChange={(e) => setOutreachSubject(e.target.value)}
+                    placeholder="Subject line..."
+                    className="w-full p-3 rounded bg-zinc-950/60 border border-zinc-850 outline-none text-white font-sans text-xs font-medium focus:border-electric transition-all"
+                  />
+                </div>
+
+                {/* Campaign Message Body */}
+                <div className="space-y-1.5 font-mono text-xs">
+                  <label className="text-zinc-400 text-[10px] uppercase font-semibold">EMAIL BODY / PITCH PAYLOAD</label>
+                  <textarea
+                    value={outreachMessage}
+                    onChange={(e) => setOutreachMessage(e.target.value)}
+                    rows={12}
+                    className="w-full bg-zinc-950/60 border border-zinc-850 rounded p-3.5 outline-none text-zinc-200 font-sans text-xs leading-relaxed focus:border-electric transition-all resize-none"
+                  />
+                </div>
+              </div>
+
+            </div>
+
+            {/* LIVE DELIVERY TELEMETRY LOGS TABLE */}
+            <div className="glass-hud rounded-lg border border-zinc-800 p-6 space-y-4 bg-zinc-950/50">
+              <div className="flex items-center justify-between border-b border-zinc-900 pb-3">
+                <div className="flex items-center space-x-2 font-mono text-xs font-bold text-matrix uppercase">
+                  <Layers className="w-4 h-4" />
+                  <span>LIVE_DISPATCH_TELEMETRY_LOGS ({dispatchLogs.length})</span>
+                </div>
+                <span className="w-2 h-2 rounded-full bg-matrix animate-pulse" />
+              </div>
+
+              {dispatchLogs.length === 0 ? (
+                <div className="text-center py-10 font-mono text-xs text-zinc-600 italic">
+                  No dispatch logs recorded. Upload a CSV file and click "START BULK DISPATCH" to trigger campaign.
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full font-mono text-xs text-left">
+                    <thead>
+                      <tr className="border-b border-zinc-850 text-[10px] text-zinc-500 uppercase">
+                        <th className="py-2.5 px-3">TIMESTAMP</th>
+                        <th className="py-2.5 px-3">RECIPIENT EMAIL</th>
+                        <th className="py-2.5 px-3">NAME</th>
+                        <th className="py-2.5 px-3">COMPANY</th>
+                        <th className="py-2.5 px-3">STATUS</th>
+                        <th className="py-2.5 px-3">DETAILS</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-zinc-900/60">
+                      {dispatchLogs.map((log) => (
+                        <tr key={log.id} className="hover:bg-zinc-900/30 transition-colors">
+                          <td className="py-2.5 px-3 text-zinc-500 text-[10px] whitespace-nowrap">{log.timestamp}</td>
+                          <td className="py-2.5 px-3 text-white font-semibold">{log.email}</td>
+                          <td className="py-2.5 px-3 text-zinc-300">{log.name}</td>
+                          <td className="py-2.5 px-3 text-zinc-400">{log.company}</td>
+                          <td className="py-2.5 px-3">
+                            <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${
+                              log.status === 'SUCCESS' ? 'bg-matrix/15 text-matrix border border-matrix/30' : 'bg-rose-500/15 text-rose-400 border border-rose-500/30'
+                            }`}>
+                              {log.status}
+                            </span>
+                          </td>
+                          <td className="py-2.5 px-3 text-zinc-400 text-[11px] font-sans">{log.details}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
           </div>
         )}
 
