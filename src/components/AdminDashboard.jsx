@@ -92,6 +92,7 @@ export default function AdminDashboard() {
   const [replyStatus, setReplyStatus] = useState({});
 
   // Bulk Outreach Email Dispatcher States
+  const [outreachServiceId, setOutreachServiceId] = useState(import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_uqsyfa5');
   const [outreachTemplateId, setOutreachTemplateId] = useState(import.meta.env.VITE_EMAILJS_OUTREACH_TEMPLATE_ID || 'template_070616h');
   const [outreachSubject, setOutreachSubject] = useState('Full-Stack Web Development & AI Workflow Integration Services');
   const [outreachMessage, setOutreachMessage] = useState(
@@ -209,7 +210,7 @@ export default function AdminDashboard() {
       alert("Please upload a CSV file or add recipient emails first.");
       return;
     }
-    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_uqsyfa5';
+    const serviceId = outreachServiceId.trim() || import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_uqsyfa5';
     const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'W1IquHHwgOi2bFZ9V';
     const avatarUrl = import.meta.env.VITE_EMAILJS_AVATAR_URL || 'https://res.cloudinary.com/suzllkcp/image/upload/v1786813178/tbljeoj4ygwwky4lin2z.jpg';
 
@@ -1806,15 +1807,26 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
-                {/* EmailJS Outreach Template ID Input */}
+                {/* EmailJS Outreach Service ID & Template ID Inputs */}
                 <div className="w-full md:w-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-3 font-mono text-xs">
+                  <div className="flex items-center space-x-2 bg-zinc-900/90 border border-zinc-850 px-3 py-1.5 rounded">
+                    <span className="text-zinc-500 text-[10px]">SERVICE_ID:</span>
+                    <input
+                      type="text"
+                      value={outreachServiceId}
+                      onChange={(e) => setOutreachServiceId(e.target.value)}
+                      placeholder="e.g. service_uqsyfa5"
+                      className="bg-transparent outline-none text-cyber font-semibold w-32 text-xs"
+                    />
+                  </div>
+
                   <div className="flex items-center space-x-2 bg-zinc-900/90 border border-zinc-850 px-3 py-1.5 rounded">
                     <span className="text-zinc-500 text-[10px]">TEMPLATE_ID:</span>
                     <input
                       type="text"
                       value={outreachTemplateId}
                       onChange={(e) => setOutreachTemplateId(e.target.value)}
-                      placeholder="e.g. template_a7asz69"
+                      placeholder="e.g. template_070616h"
                       className="bg-transparent outline-none text-matrix font-semibold w-36 text-xs"
                     />
                   </div>
