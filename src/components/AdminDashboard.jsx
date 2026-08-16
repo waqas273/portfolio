@@ -163,7 +163,7 @@ export default function AdminDashboard() {
     {
       id: 'school_lms',
       label: '🎓 School/College Management System & LMS',
-      subject: "Custom Web Portal & School/College Management System for {company}",
+      subject: "Custom Web Portal & School & College Management System for {company}",
       body: `Dear Management Team at {company},\n\nI recently reviewed {company}'s educational presence and wanted to reach out regarding modernizing your web platform into an enterprise-grade, custom School & College Management Portal.\n\nI am Muhammad Waqas, a Full-Stack Software Engineer. I specialize in building custom, high-performance web applications and management systems for educational institutions to automate administrative workflows, fee tracking, and academic management.\n\nHere is an overview of the custom portal solution I can build for {company}:\n- 💳 Automated Fee & Financial Management: Real-time Fee Status Tracking (Paid, Pending, Overdue), digital fee slips/vouchers, and admin approval workflows.\n- 👥 Student & Parent Individual Portals: Dedicated login accounts for every student & parent to view attendance, homework, and exam results.\n- 📝 Digital Admissions & Class Management: Online application forms, applicant tracking, and automated Roll Number/Section assignment.\n- 🔒 Role-Based Multi-Stakeholder Access: Tailored dashboards for Super Admin, Principal, Accountant, Teachers, Students, and Parents.\n- 💼 Job Openings Portal: Career portal for prospective teacher & staff job applications.\n- 🎓 Future-Ready LMS for College Expansion: Enterprise Learning Management System with online lecture materials, assignments, quizzes, and university-grade tools as you scale from Classes 1-10 into College/Higher Education.\n\nYou can inspect my verified software developer portfolio and live web projects here: https://iwaqass.xyz/\n\nWould you be open to a brief 10-minute online demonstration or prototype review this week to see how we can digitize {company}'s operations?\n\nBest regards,\nMuhammad Waqas\nFull-Stack Software Engineer\nPortfolio: https://iwaqass.xyz/\nGitHub: https://github.com/waqas273`
     }
   ];
@@ -281,6 +281,11 @@ export default function AdminDashboard() {
 
       const rec = recipientsList[i];
       
+      const personalizedSubject = outreachSubject
+        .replaceAll('{name}', rec.name)
+        .replaceAll('{company}', rec.company)
+        .replaceAll('{email}', rec.email);
+
       const personalizedMessage = outreachMessage
         .replaceAll('{name}', rec.name)
         .replaceAll('{company}', rec.company)
@@ -292,7 +297,7 @@ export default function AdminDashboard() {
         name: rec.name,
         email: rec.email,
         company_name: rec.company,
-        subject: outreachSubject,
+        subject: personalizedSubject,
         message: personalizedMessage,
         avatar_url: avatarUrl,
         developer_name: profileData.name || 'Muhammad Waqas',
