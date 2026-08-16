@@ -92,7 +92,7 @@ export default function AdminDashboard() {
   const [replyStatus, setReplyStatus] = useState({});
 
   // Bulk Outreach Email Dispatcher States
-  const [outreachTemplateId, setOutreachTemplateId] = useState(import.meta.env.VITE_EMAILJS_OUTREACH_TEMPLATE_ID || '');
+  const [outreachTemplateId, setOutreachTemplateId] = useState(import.meta.env.VITE_EMAILJS_OUTREACH_TEMPLATE_ID || 'template_070616h');
   const [outreachSubject, setOutreachSubject] = useState('Full-Stack Web Development & AI Workflow Integration Services');
   const [outreachMessage, setOutreachMessage] = useState(
     `Hi {name},\n\nI noticed {company} is scaling and wanted to reach out regarding your web application & digital infrastructure.\n\nI am Muhammad Waqas, a Full-Stack & AI Engineer. I specialize in building high-performance web applications (React 19, Next.js, Node.js, MERN stack) and integrating custom AI Vector RAG pipelines to automate business workflows.\n\nHere is a quick overview of what I can build for {company}:\n- Modern, ultra-fast web applications & responsive dashboards\n- Real-time cloud databases (Firebase / MongoDB)\n- AI-driven automated chat, document RAG, and custom microservices\n\nYou can inspect my live developer portfolio here: https://iwaqass.xyz/\n\nWould you be open to a brief chat this week to discuss how we can scale your application?\n\nBest regards,\nMuhammad Waqas\nFull-Stack & AI Engineer\nPortfolio: https://iwaqass.xyz/`
