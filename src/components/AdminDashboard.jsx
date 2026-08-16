@@ -281,15 +281,16 @@ export default function AdminDashboard() {
 
       const rec = recipientsList[i];
       
-      const personalizedSubject = outreachSubject
-        .replaceAll('{name}', rec.name)
-        .replaceAll('{company}', rec.company)
-        .replaceAll('{email}', rec.email);
+      const replacePlaceholders = (text, recItem) => {
+        if (!text) return '';
+        return text
+          .replace(/\{name\}/gi, recItem.name || '')
+          .replace(/\{company\}/gi, recItem.company || '')
+          .replace(/\{email\}/gi, recItem.email || '');
+      };
 
-      const personalizedMessage = outreachMessage
-        .replaceAll('{name}', rec.name)
-        .replaceAll('{company}', rec.company)
-        .replaceAll('{email}', rec.email);
+      const personalizedSubject = replacePlaceholders(outreachSubject, rec);
+      const personalizedMessage = replacePlaceholders(outreachMessage, rec);
 
       const templateParams = {
         to_name: rec.name,
